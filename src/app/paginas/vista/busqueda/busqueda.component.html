@@ -1,0 +1,428 @@
+<!-- Contenedor principal -->
+<div class="bg-gray-50">
+  <div class="w-full">
+    <!-- Header de búsqueda -->
+    <div class="bg-white shadow-sm border border-gray-200 mb-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Barra de búsqueda avanzada -->
+        <app-barra-busqueda-avanzada
+          [categorias]="categorias()"
+          [terminoInicial]="termino()"
+          [categoriaInicial]="categoriaSeleccionada()"
+          (buscar)="onBuscar($event)"
+          (productoSeleccionado)="onProductoSeleccionadoAutocompletado($event)"
+          class="block w-full"
+        >
+        </app-barra-busqueda-avanzada>
+      </div>
+    </div>
+
+    <!-- Sugerencias de búsqueda -->
+    @if (sugerencias().length > 0) {
+    <div class="bg-blue-50 border border-blue-200 mb-6">
+      <div class="p-4">
+        <div class="flex items-start gap-3">
+          <svg
+            class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          <div class="flex-1">
+            <h3 class="text-sm font-medium text-blue-900 mb-2">
+              ¿Quizás quisiste decir?
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              @for (sugerencia of sugerencias(); track sugerencia.termino) {
+              <button
+                (click)="onBuscar({ q: sugerencia.termino })"
+                class="text-sm text-blue-700 hover:text-blue-900 underline"
+              >
+                {{ sugerencia.termino }}
+              </button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Layout principal con resultados -->
+    @if (termino()) {
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex gap-6">
+        <!-- Filtros laterales (desktop) -->
+        <aside class="hidden lg:block w-80 flex-shrink-0">
+          <div class="sticky top-6">
+            <app-filtros-laterales
+              [filtrosDisponibles]="filtrosDisponibles()"
+              [filtrosActivos]="filtrosActivos()"
+              (aplicarFiltro)="onAplicarFiltro($event)"
+              (removerFiltro)="onRemoverFiltro($event)"
+              (limpiarFiltros)="onLimpiarFiltros()"
+            >
+            </app-filtros-laterales>
+          </div>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="flex-1 min-w-0">
+          <!-- Header de resultados -->
+          <div class="bg-white shadow-sm border border-gray-200 mb-6">
+            <div class="p-4 border-b border-gray-200">
+              <!-- Info de resultados y controles móviles -->
+              <div class="flex items-center justify-between flex-wrap gap-4">
+                <!-- Información de resultados -->
+                <div class="flex items-center gap-4">
+                  @if (cargando()) {
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"
+                    ></div>
+                    <span class="text-sm text-gray-600">Buscando...</span>
+                  </div>
+                  } @else if (hayResultados()) {
+                  <p class="text-sm text-gray-600">
+                    <span class="font-medium text-gray-900">{{
+                      totalResultados()
+                    }}</span>
+                    {{ totalResultados() === 1 ? "resultado" : "resultados" }}
+                    @if (termino()) { para
+                    <span class="font-medium text-gray-900"
+                      >"{{ termino() }}"</span
+                    >
+                    }
+                  </p>
+                  }
+
+                  <!-- Botón filtros móvil -->
+                  <button
+                    (click)="toggleFiltrosMovil()"
+                    class="lg:hidden flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+                      ></path>
+                    </svg>
+                    Filtros @if (filtrosActivos().length > 0) {
+                    <span
+                      class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full"
+                    >
+                      {{ filtrosActivos().length }}
+                    </span>
+                    }
+                  </button>
+                </div>
+
+                <!-- Controles de vista y ordenamiento -->
+                <div class="flex items-center gap-3">
+                  <!-- Toggle vista grid/lista -->
+                  <div class="hidden sm:flex bg-gray-100 p-1">
+                    <button
+                      (click)="vistaActual.set('grid')"
+                      [class]="
+                        vistaActual() === 'grid'
+                          ? 'bg-white shadow-sm text-gray-900'
+                          : 'text-gray-600 hover:text-gray-900'
+                      "
+                      class="p-2 rounded-md transition-all duration-200"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                        ></path>
+                      </svg>
+                    </button>
+                    <button
+                      (click)="vistaActual.set('lista')"
+                      [class]="
+                        vistaActual() === 'lista'
+                          ? 'bg-white shadow-sm text-gray-900'
+                          : 'text-gray-600 hover:text-gray-900'
+                      "
+                      class="p-2 rounded-md transition-all duration-200"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- Selector de ordenamiento -->
+                  <select
+                    [value]="ordenamiento()"
+                    (change)="onCambiarOrdenamiento($any($event.target).value)"
+                    class="px-3 py-2 text-sm border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    @for (opcion of opcionesOrdenamiento(); track opcion.value)
+                    {
+                    <option [value]="opcion.value">{{ opcion.label }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <!-- Filtros activos -->
+              @if (filtrosActivos().length > 0) {
+              <div class="mt-4 pt-4 border-t border-gray-200">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-sm font-medium text-gray-700"
+                    >Filtros activos:</span
+                  >
+                  @for (filtro of filtrosActivos(); track filtro.campo) {
+                  <div
+                    class="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                  >
+                    <span>{{ filtro.label }}</span>
+                    <button
+                      (click)="onRemoverFiltro(filtro.campo)"
+                      class="ml-1 hover:bg-blue-200 rounded-full p-0.5"
+                    >
+                      <svg
+                        class="w-3 h-3"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                  }
+                  <button
+                    (click)="onLimpiarFiltros()"
+                    class="text-sm text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Limpiar todos
+                  </button>
+                </div>
+              </div>
+              }
+            </div>
+
+            <!-- Resultados de búsqueda -->
+            <div class="p-6">
+              @if (cargando()) {
+              <div class="flex items-center justify-center py-12">
+                <div
+                  class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+                ></div>
+                <span class="ml-3 text-gray-600">Buscando productos...</span>
+              </div>
+              } @else if (error()) {
+              <div class="text-center py-12">
+                <div class="text-red-600 mb-4">
+                  <svg
+                    class="w-16 h-16 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">
+                  Error en la búsqueda
+                </h3>
+                <p class="text-gray-600 mb-4">{{ error() }}</p>
+                <button
+                  (click)="realizarBusqueda()"
+                  class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+                >
+                  Intentar de nuevo
+                </button>
+              </div>
+              } @else if (hayResultados()) {
+              <app-resultados-busqueda
+                [productos]="productos()"
+                [vista]="vistaActual()"
+                [cargandoMas]="cargandoMas()"
+                (seleccionarProducto)="onSeleccionarProducto($event)"
+                (cargarMas)="cargarMasResultados()"
+              >
+              </app-resultados-busqueda>
+              } @else if (termino()) {
+              <div class="text-center py-12">
+                <div class="text-gray-400 mb-4">
+                  <svg
+                    class="w-16 h-16 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    ></path>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">
+                  No se encontraron resultados
+                </h3>
+                <p class="text-gray-600 mb-6">
+                  Tu búsqueda "<span class="font-medium">{{ termino() }}</span
+                  >" no arrojó ningún resultado.
+                </p>
+                <div class="space-y-2 text-sm text-gray-600">
+                  <p>Sugerencias:</p>
+                  <ul class="list-disc list-inside space-y-1">
+                    <li>Revisa la ortografía de las palabras</li>
+                    <li>Utiliza términos más generales</li>
+                    <li>Prueba con sinónimos</li>
+                    <li>Reduce el número de filtros aplicados</li>
+                  </ul>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Paginación -->
+          @if (hayResultados() && paginacion()) {
+          <div class="bg-white shadow-sm border border-gray-200">
+            <div class="p-4 flex items-center justify-between">
+              <p class="text-sm text-gray-600">
+                Mostrando
+                {{
+                  (paginacion()!.current_page - 1) * paginacion()!.per_page + 1
+                }}
+                a
+                {{
+                  paginacion()!.current_page * paginacion()!.per_page >
+                  paginacion()!.total
+                    ? paginacion()!.total
+                    : paginacion()!.current_page * paginacion()!.per_page
+                }}
+                de {{ paginacion()!.total }} resultados
+              </p>
+              <div class="flex gap-2">
+                <button
+                  [disabled]="paginacion()!.current_page === 1"
+                  (click)="onCambiarPagina(paginacion()!.current_page - 1)"
+                  class="px-3 py-2 text-sm border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Anterior
+                </button>
+                <button
+                  [disabled]="
+                    paginacion()!.current_page === paginacion()!.last_page
+                  "
+                  (click)="onCambiarPagina(paginacion()!.current_page + 1)"
+                  class="px-3 py-2 text-sm border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Siguiente
+                </button>
+              </div>
+            </div>
+          </div>
+          }
+        </main>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+
+<!-- Modal de filtros móvil -->
+@if (mostrarFiltrosMovil()) {
+<div class="fixed inset-0 z-50 lg:hidden">
+  <!-- Overlay -->
+  <div
+    class="fixed inset-0 bg-black bg-opacity-50"
+    (click)="toggleFiltrosMovil()"
+  ></div>
+
+  <!-- Panel de filtros -->
+  <div class="fixed inset-y-0 left-0 w-80 max-w-full bg-white shadow-xl">
+    <div class="h-full flex flex-col">
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between p-4 border-b border-gray-200"
+      >
+        <h2 class="text-lg font-semibold text-gray-900">Filtros</h2>
+        <button
+          (click)="toggleFiltrosMovil()"
+          class="p-2 text-gray-400 hover:text-gray-600"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Contenido de filtros -->
+      <div class="flex-1 overflow-y-auto">
+        <app-filtros-laterales
+          [filtrosDisponibles]="filtrosDisponibles()"
+          [filtrosActivos]="filtrosActivos()"
+          (aplicarFiltro)="onAplicarFiltro($event)"
+          (removerFiltro)="onRemoverFiltro($event)"
+          (limpiarFiltros)="onLimpiarFiltros()"
+        >
+        </app-filtros-laterales>
+      </div>
+
+      <!-- Footer con botones -->
+      <div class="p-4 border-t border-gray-200">
+        <div class="flex gap-3">
+          <button
+            (click)="onLimpiarFiltros()"
+            class="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+          >
+            Limpiar
+          </button>
+          <button
+            (click)="toggleFiltrosMovil()"
+            class="flex-1 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+          >
+            Aplicar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Toast para notificaciones (pendiente de implementar) -->

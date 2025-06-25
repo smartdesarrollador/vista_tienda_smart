@@ -1,0 +1,321 @@
+<!-- Panel de Filtros Avanzados -->
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+  <!-- Header Principal -->
+  <div
+    class="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg"
+  >
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <h2 class="text-xl font-bold text-gray-900 flex items-center">
+          <svg
+            class="w-6 h-6 mr-2 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+            />
+          </svg>
+          Filtros
+        </h2>
+
+        <!-- Contador de Filtros Activos -->
+        @if (tieneFiltrosActivos()) {
+        <span
+          class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+        >
+          {{ contadorFiltrosActivos() }} activo(s)
+        </span>
+        }
+      </div>
+
+      <!-- Acciones del Header -->
+      <div class="flex items-center space-x-2">
+        <!-- Limpiar Todos los Filtros -->
+        @if (tieneFiltrosActivos()) {
+        <button
+          type="button"
+          class="px-3 py-1.5 text-sm text-red-600 hover:text-red-700 font-medium transition-colors duration-200 border border-red-200 rounded-md hover:bg-red-50"
+          (click)="limpiarTodosLosFiltros()"
+        >
+          Limpiar todo
+        </button>
+        }
+
+        <!-- Toggle Mostrar/Ocultar -->
+        <button
+          type="button"
+          class="p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+          (click)="toggleMostrarFiltros()"
+          [title]="mostrarFiltros() ? 'Ocultar filtros' : 'Mostrar filtros'"
+        >
+          <svg
+            class="w-5 h-5 transition-transform duration-200"
+            [class.rotate-180]="!mostrarFiltros()"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros Rápidos -->
+  @if (mostrarFiltros()) {
+  <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+    <div class="flex flex-wrap gap-2">
+      <span class="text-sm font-medium text-gray-700 mr-2 self-center"
+        >Filtros rápidos:</span
+      >
+
+      <button
+        type="button"
+        class="px-3 py-1 text-xs font-medium rounded-full border transition-all duration-200"
+        [class.bg-orange-100]="descuento()"
+        [class.text-orange-800]="descuento()"
+        [class.border-orange-200]="descuento()"
+        [class.bg-gray-100]="!descuento()"
+        [class.text-gray-700]="!descuento()"
+        [class.border-gray-200]="!descuento()"
+        [class.hover:bg-orange-50]="!descuento()"
+        (click)="aplicarFiltroRapido('ofertas')"
+      >
+        🏷️ En Oferta
+      </button>
+
+      <button
+        type="button"
+        class="px-3 py-1 text-xs font-medium rounded-full border transition-all duration-200"
+        [class.bg-green-100]="disponibilidad()"
+        [class.text-green-800]="disponibilidad()"
+        [class.border-green-200]="disponibilidad()"
+        [class.bg-gray-100]="!disponibilidad()"
+        [class.text-gray-700]="!disponibilidad()"
+        [class.border-gray-200]="!disponibilidad()"
+        [class.hover:bg-green-50]="!disponibilidad()"
+        (click)="aplicarFiltroRapido('disponibles')"
+      >
+        ✅ Disponible
+      </button>
+
+      <button
+        type="button"
+        class="px-3 py-1 text-xs font-medium rounded-full border transition-all duration-200"
+        [class.bg-yellow-100]="rating() === 4"
+        [class.text-yellow-800]="rating() === 4"
+        [class.border-yellow-200]="rating() === 4"
+        [class.bg-gray-100]="rating() !== 4"
+        [class.text-gray-700]="rating() !== 4"
+        [class.border-gray-200]="rating() !== 4"
+        [class.hover:bg-yellow-50]="rating() !== 4"
+        (click)="aplicarFiltroRapido('populares')"
+      >
+        ⭐ Mejor Valorados
+      </button>
+
+      <button
+        type="button"
+        class="px-3 py-1 text-xs font-medium rounded-full border bg-gray-100 text-gray-700 border-gray-200 hover:bg-purple-50 transition-all duration-200"
+        (click)="aplicarFiltroRapido('nuevos')"
+      >
+        🆕 Nuevos
+      </button>
+    </div>
+  </div>
+  }
+
+  <!-- Contenido de Filtros -->
+  @if (mostrarFiltros()) {
+  <div class="divide-y divide-gray-100">
+    <!-- 1. Filtro de Categorías -->
+    <div class="p-4">
+      <app-filtro-categoria
+        [categoriasSeleccionadas]="categorias()"
+        [categoriasDisponibles]="categoriasDisponibles()"
+        (categoriaSeleccionada)="onCategoriasSeleccionadas($event)"
+      />
+    </div>
+
+    <!-- 2. Filtro de Precio -->
+    <div class="p-4">
+      <app-filtro-precio
+        [precioMin]="precioMin()"
+        [precioMax]="precioMax()"
+        (precioChanged)="onPrecioChange($event)"
+      />
+    </div>
+
+    <!-- 3. Filtro de Atributos -->
+    <div class="p-4">
+      <app-filtro-atributo
+        [atributosSeleccionados]="atributos()"
+        [atributosDisponibles]="atributosDisponibles()"
+        [loading]="false"
+        [disabled]="false"
+        (atributosChanged)="onAtributosChange($event)"
+      />
+    </div>
+
+    <!-- 4. Filtro de Disponibilidad -->
+    <div class="p-4">
+      <div class="space-y-3">
+        <h4 class="text-lg font-semibold text-gray-900 flex items-center">
+          <svg
+            class="w-5 h-5 mr-2 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Disponibilidad
+        </h4>
+
+        <div class="space-y-2">
+          <label class="flex items-center">
+            <input
+              type="checkbox"
+              [checked]="disponibilidad() === true"
+              (change)="onDisponibilidadCheckChange($event)"
+              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+            />
+            <span class="ml-2 text-sm text-gray-700"
+              >Solo productos disponibles</span
+            >
+          </label>
+
+          <label class="flex items-center">
+            <input
+              type="checkbox"
+              [checked]="descuento() === true"
+              (change)="onDescuentoCheckChange($event)"
+              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+            />
+            <span class="ml-2 text-sm text-gray-700"
+              >Solo productos en oferta</span
+            >
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Filtro de Calificación -->
+    <div class="p-4">
+      <div class="space-y-3">
+        <h4 class="text-lg font-semibold text-gray-900 flex items-center">
+          <svg
+            class="w-5 h-5 mr-2 text-yellow-500"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+            />
+          </svg>
+          Calificación
+        </h4>
+
+        <div class="space-y-2">
+          @for (stars of [5, 4, 3, 2, 1]; track stars) {
+          <label class="flex items-center cursor-pointer">
+            <input
+              type="radio"
+              name="rating"
+              [value]="stars"
+              [checked]="rating() === stars"
+              (change)="onRatingChange(stars)"
+              class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 focus:ring-2"
+            />
+            <div class="ml-2 flex items-center">
+              @for (star of [1,2,3,4,5]; track star) {
+              <svg
+                class="w-4 h-4"
+                [class.text-yellow-400]="star <= stars"
+                [class.text-gray-300]="star > stars"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                />
+              </svg>
+              }
+              <span class="ml-2 text-sm text-gray-600">y más</span>
+            </div>
+          </label>
+          } @if (rating() !== undefined) {
+          <button
+            type="button"
+            class="w-full px-3 py-2 text-sm text-red-600 hover:text-red-700 font-medium transition-colors duration-200 mt-2"
+            (click)="onRatingChange(undefined)"
+          >
+            Limpiar calificación
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Filtros Personalizados -->
+    <div class="p-4">
+      <app-filtro-personalizado
+        [filtrosPersonalizados]="filtrosPersonalizados()"
+        [marcasDisponibles]="marcasDisponibles()"
+        [loading]="false"
+        [disabled]="false"
+        (filtrosChanged)="onFiltrosPersonalizadosChange($event)"
+        (filtroGuardado)="onFiltroGuardado($event)"
+        (filtroEliminado)="onFiltroEliminado($event)"
+      />
+    </div>
+  </div>
+  }
+
+  <!-- Footer del Panel -->
+  @if (mostrarFiltros() && tieneFiltrosActivos()) {
+  <div class="px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-gray-600">
+        <span class="font-medium">{{ contadorFiltrosActivos() }}</span>
+        filtro(s) aplicado(s)
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button
+          type="button"
+          class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+          (click)="exportarFiltros()"
+          title="Exportar filtros"
+        >
+          💾 Guardar
+        </button>
+
+        <button
+          type="button"
+          class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors duration-200"
+          (click)="limpiarTodosLosFiltros()"
+        >
+          Limpiar todo
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</div>

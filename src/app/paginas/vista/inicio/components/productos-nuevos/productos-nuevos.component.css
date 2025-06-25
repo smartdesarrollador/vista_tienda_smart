@@ -1,0 +1,206 @@
+/* Estilos específicos para el componente productos-nuevos */
+
+/* Truncar texto a 2 líneas */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Animaciones personalizadas */
+@keyframes pulse-emerald {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-emerald {
+  animation: pulse-emerald 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Efectos de hover personalizados */
+.grupo-producto:hover .imagen-producto {
+  transform: scale(1.05);
+}
+
+.grupo-producto:hover .info-producto {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.9)
+  );
+}
+
+/* Badge de nuevo con animación */
+.badge-nuevo {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+  animation: pulse-emerald 3s infinite;
+}
+
+/* Mejoras de accesibilidad */
+.producto-card:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+.boton-accion:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Responsive mejoras */
+@media (max-width: 640px) {
+  .grid-productos {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .grid-productos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid-productos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .grid-productos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* Optimizaciones de performance */
+.imagen-producto {
+  will-change: transform;
+  transition: transform 0.3s ease-in-out;
+}
+
+.overlay-botones {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Estados de stock */
+.stock-alto {
+  color: #059669;
+}
+
+.stock-medio {
+  color: #d97706;
+}
+
+.stock-bajo {
+  color: #dc2626;
+}
+
+/* Gradiente de fondo personalizado */
+.bg-gradient-nuevo {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #f1f5f9 100%);
+}
+
+/* Sombras personalizadas */
+.shadow-producto {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-producto-hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Animación del badge de descuento */
+.badge-descuento {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%,
+  43% {
+    transform: translate3d(0, -5px, 0);
+  }
+  70% {
+    transform: translate3d(0, -3px, 0);
+  }
+  90% {
+    transform: translate3d(0, -1px, 0);
+  }
+}
+
+/* Mejoras de tipografía */
+.titulo-seccion {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.precio-producto {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Estado de carga skeleton mejorado */
+.skeleton {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Botón ver más mejorado */
+.boton-ver-mas {
+  background: linear-gradient(135deg, #10b981, #059669);
+  transition: all 0.3s ease;
+}
+
+.boton-ver-mas:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+}
+
+/* Mejoras de Dark Mode (preparado para futuro) */
+@media (prefers-color-scheme: dark) {
+  .producto-card {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+
+  .titulo-producto {
+    color: #f9fafb;
+  }
+
+  .precio-producto {
+    color: #10b981;
+  }
+}

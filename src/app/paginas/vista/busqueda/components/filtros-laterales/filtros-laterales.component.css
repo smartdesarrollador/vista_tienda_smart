@@ -1,0 +1,83 @@
+/* Estilos para secciones expandibles */
+.filter-section {
+  transition: all 0.3s ease;
+}
+
+.filter-header {
+  transition: background-color 0.2s ease;
+}
+
+.filter-header:hover {
+  background-color: #f9fafb;
+}
+
+/* Animación para chevron */
+.chevron {
+  transition: transform 0.2s ease;
+}
+
+/* Estilos para checkboxes */
+input[type="checkbox"] {
+  transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+/* Estilos para inputs numéricos */
+input[type="number"] {
+  transition: all 0.2s ease;
+}
+
+input[type="number"]:focus {
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.2);
+}
+
+/* Botones */
+.filter-button {
+  transition: all 0.2s ease;
+}
+
+.filter-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Contadores de productos */
+.product-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Estados de filtros activos */
+.filter-active {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sticky-filters {
+    position: static;
+  }
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .chevron,
+  .filter-section,
+  .filter-header,
+  input[type="checkbox"],
+  input[type="number"],
+  .filter-button {
+    transition: none;
+  }
+}
+
+/* Focus states */
+button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

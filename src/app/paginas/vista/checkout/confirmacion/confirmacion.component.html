@@ -1,0 +1,158 @@
+<div class="p-8 text-center">
+  <div
+    class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-6"
+  >
+    <svg
+      class="w-10 h-10 text-green-600"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M5 13l4 4L19 7"
+      ></path>
+    </svg>
+  </div>
+
+  <h2 class="text-3xl font-bold text-gray-900 mb-3">¡Pago Confirmado!</h2>
+
+  <p class="text-lg text-gray-600 mb-8">
+    Tu pedido ha sido procesado exitosamente y el pago fue aprobado
+  </p>
+
+  <!-- Información del pedido -->
+  <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 mb-8">
+    <div class="grid grid-cols-2 gap-4 text-left">
+      <div>
+        <p class="text-sm text-gray-600">Número de pedido:</p>
+        <p class="text-xl font-bold text-gray-900">
+          {{ numeroPedidoFormateado() }}
+        </p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600">Total pagado:</p>
+        <p class="text-xl font-bold text-green-600">
+          S/ {{ totalFinal().toFixed(2) }}
+        </p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600">Método de pago:</p>
+        <p class="text-lg font-medium text-gray-900">
+          {{ metodoPago()?.nombre || "Tarjeta de Crédito/Débito" }}
+        </p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600">Estado:</p>
+        <p class="text-lg font-medium text-green-600">✓ Aprobado</p>
+      </div>
+    </div>
+
+    <!-- Información adicional del cliente -->
+    @if (datosPersonales()) {
+    <div class="mt-6 pt-4 border-t border-gray-200">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+        <div>
+          <p class="text-sm text-gray-600">Cliente:</p>
+          <p class="text-base font-medium text-gray-900">
+            {{ datosPersonales()?.nombre }} {{ datosPersonales()?.apellidos }}
+          </p>
+          <p class="text-sm text-gray-500">
+            {{ datosPersonales()?.email }}
+          </p>
+        </div>
+        @if (direccionEnvio()) {
+        <div>
+          <p class="text-sm text-gray-600">Dirección de envío:</p>
+          <p class="text-base font-medium text-gray-900">
+            {{ direccionEnvio()?.direccion }}
+          </p>
+          <p class="text-sm text-gray-500">
+            {{ direccionEnvio()?.distrito }}, {{ direccionEnvio()?.provincia }}
+          </p>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Acciones principales -->
+  <div class="space-y-3 mb-6">
+    <button
+      (click)="irAMisPedidos()"
+      class="w-full bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+    >
+      Ver Mis Pedidos
+    </button>
+    <button
+      (click)="continuarComprando()"
+      class="w-full bg-gray-100 text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+    >
+      Continuar Comprando
+    </button>
+  </div>
+
+  <!-- Acciones secundarias -->
+  <div class="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+    <button
+      (click)="descargarComprobante()"
+      class="flex items-center justify-center px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+    >
+      <svg
+        class="w-4 h-4 mr-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        ></path>
+      </svg>
+      Descargar Comprobante
+    </button>
+
+    <button
+      (click)="enviarPorEmail()"
+      class="flex items-center justify-center px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+    >
+      <svg
+        class="w-4 h-4 mr-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+        ></path>
+      </svg>
+      Enviar por Email
+    </button>
+  </div>
+
+  <!-- Información adicional -->
+  <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+    <p class="text-sm text-blue-800">
+      📧 Recibirás un correo de confirmación en breve con todos los detalles de
+      tu pedido y el seguimiento de envío.
+    </p>
+  </div>
+
+  <!-- Información de contacto -->
+  <div class="mt-6 text-center">
+    <p class="text-sm text-gray-500">
+      ¿Tienes alguna pregunta?
+      <a href="/contacto" class="text-blue-600 hover:text-blue-700 font-medium">
+        Contáctanos
+      </a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,365 @@
+<!-- Filtro de Precio -->
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+  <!-- Header del Filtro -->
+  <div class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+        <svg
+          class="w-5 h-5 mr-2 text-green-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+          />
+        </svg>
+        Precio
+      </h3>
+
+      <!-- Estado y Acciones -->
+      <div class="flex items-center space-x-2">
+        <!-- Rango Activo -->
+        @if (tieneRangoActivo()) {
+        <span
+          class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full"
+        >
+          {{ rangoFormateado() }}
+        </span>
+        }
+
+        <!-- Limpiar -->
+        @if (tieneRangoActivo()) {
+        <button
+          type="button"
+          class="p-1.5 text-red-400 hover:text-red-600 transition-colors duration-200"
+          (click)="limpiarRango()"
+          title="Limpiar filtro de precio"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Error de Validación -->
+    @if (errorValidacion()) {
+    <div class="mt-2 flex items-center text-sm text-red-600">
+      <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      {{ errorValidacion() }}
+    </div>
+    }
+  </div>
+
+  <!-- Contenido del Filtro -->
+  <div class="p-4">
+    <!-- Filtros Rápidos -->
+    <div class="mb-4">
+      <div class="flex flex-wrap gap-2">
+        <span class="text-sm font-medium text-gray-700 self-center mr-2"
+          >Rápido:</span
+        >
+
+        <button
+          type="button"
+          class="px-3 py-1.5 text-xs font-medium rounded-full border transition-all duration-200"
+          [class.bg-green-100]="rangoSeleccionado() === 'Económico'"
+          [class.text-green-800]="rangoSeleccionado() === 'Económico'"
+          [class.border-green-200]="rangoSeleccionado() === 'Económico'"
+          [class.bg-gray-100]="rangoSeleccionado() !== 'Económico'"
+          [class.text-gray-700]="rangoSeleccionado() !== 'Económico'"
+          [class.border-gray-200]="rangoSeleccionado() !== 'Económico'"
+          [class.hover:bg-green-50]="rangoSeleccionado() !== 'Económico'"
+          (click)="aplicarRangoRapido('economico')"
+          [disabled]="disabled()"
+        >
+          💸 Económico
+        </button>
+
+        <button
+          type="button"
+          class="px-3 py-1.5 text-xs font-medium rounded-full border transition-all duration-200"
+          [class.bg-blue-100]="rangoSeleccionado() === 'Rango Medio'"
+          [class.text-blue-800]="rangoSeleccionado() === 'Rango Medio'"
+          [class.border-blue-200]="rangoSeleccionado() === 'Rango Medio'"
+          [class.bg-gray-100]="rangoSeleccionado() !== 'Rango Medio'"
+          [class.text-gray-700]="rangoSeleccionado() !== 'Rango Medio'"
+          [class.border-gray-200]="rangoSeleccionado() !== 'Rango Medio'"
+          [class.hover:bg-blue-50]="rangoSeleccionado() !== 'Rango Medio'"
+          (click)="aplicarRangoRapido('medio')"
+          [disabled]="disabled()"
+        >
+          💰 Medio
+        </button>
+
+        <button
+          type="button"
+          class="px-3 py-1.5 text-xs font-medium rounded-full border transition-all duration-200"
+          [class.bg-purple-100]="rangoSeleccionado() === 'Premium'"
+          [class.text-purple-800]="rangoSeleccionado() === 'Premium'"
+          [class.border-purple-200]="rangoSeleccionado() === 'Premium'"
+          [class.bg-gray-100]="rangoSeleccionado() !== 'Premium'"
+          [class.text-gray-700]="rangoSeleccionado() !== 'Premium'"
+          [class.border-gray-200]="rangoSeleccionado() !== 'Premium'"
+          [class.hover:bg-purple-50]="rangoSeleccionado() !== 'Premium'"
+          (click)="aplicarRangoRapido('premium')"
+          [disabled]="disabled()"
+        >
+          💎 Premium
+        </button>
+
+        <button
+          type="button"
+          class="px-3 py-1.5 text-xs font-medium rounded-full border transition-all duration-200"
+          [class.bg-yellow-100]="rangoSeleccionado() === 'Lujo'"
+          [class.text-yellow-800]="rangoSeleccionado() === 'Lujo'"
+          [class.border-yellow-200]="rangoSeleccionado() === 'Lujo'"
+          [class.bg-gray-100]="rangoSeleccionado() !== 'Lujo'"
+          [class.text-gray-700]="rangoSeleccionado() !== 'Lujo'"
+          [class.border-gray-200]="rangoSeleccionado() !== 'Lujo'"
+          [class.hover:bg-yellow-50]="rangoSeleccionado() !== 'Lujo'"
+          (click)="aplicarRangoRapido('lujo')"
+          [disabled]="disabled()"
+        >
+          ✨ Lujo
+        </button>
+      </div>
+    </div>
+
+    <!-- Rangos Predefinidos -->
+    <div class="mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="text-sm font-medium text-gray-900">Rangos populares</h4>
+        <button
+          type="button"
+          class="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200"
+          (click)="toggleRangoPersonalizado()"
+        >
+          {{ mostrarRangoPersonalizado() ? "Ver rangos" : "Personalizar" }}
+        </button>
+      </div>
+
+      <!-- Lista de Rangos Predefinidos -->
+      @if (!mostrarRangoPersonalizado()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        @for (rango of rangosPredefinidos(); track rango.label) {
+        <button
+          type="button"
+          class="flex items-center justify-between p-3 border rounded-lg text-left transition-all duration-200"
+          [class.border-green-300]="isRangoSeleccionado(rango)"
+          [class.bg-green-50]="isRangoSeleccionado(rango)"
+          [class.border-gray-200]="!isRangoSeleccionado(rango)"
+          [class.bg-white]="!isRangoSeleccionado(rango)"
+          [class.hover:bg-gray-50]="!isRangoSeleccionado(rango) && !disabled()"
+          [class.opacity-50]="disabled()"
+          (click)="seleccionarRangoPredefinido(rango)"
+          [disabled]="disabled()"
+        >
+          <div class="flex items-center">
+            <span class="text-lg mr-3">{{ rango.icono }}</span>
+            <div>
+              <div class="text-sm font-medium text-gray-900">
+                {{ rango.label }}
+              </div>
+            </div>
+          </div>
+
+          @if (isRangoSeleccionado(rango)) {
+          <svg
+            class="w-5 h-5 text-green-600"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          }
+        </button>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Rango Personalizado -->
+    @if (mostrarRangoPersonalizado()) {
+    <div class="space-y-4">
+      <h4 class="text-sm font-medium text-gray-900 flex items-center">
+        <svg
+          class="w-4 h-4 mr-2 text-gray-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+          />
+        </svg>
+        Rango personalizado
+      </h4>
+
+      <!-- Inputs de Rango -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- Precio Mínimo -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Precio mínimo
+          </label>
+          <div class="relative">
+            <span
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"
+            >
+              {{ moneda() }}
+            </span>
+            <input
+              type="number"
+              class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-colors duration-200"
+              [class.border-red-300]="errorValidacion() && precioMinLocal()"
+              [class.focus:ring-red-500]="errorValidacion() && precioMinLocal()"
+              [class.focus:border-red-500]="
+                errorValidacion() && precioMinLocal()
+              "
+              [placeholder]="placeholder().min"
+              [value]="precioMinLocal() || ''"
+              [disabled]="disabled()"
+              [step]="step()"
+              min="0"
+              (input)="onPrecioMinChange($event)"
+            />
+          </div>
+        </div>
+
+        <!-- Precio Máximo -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Precio máximo
+          </label>
+          <div class="relative">
+            <span
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"
+            >
+              {{ moneda() }}
+            </span>
+            <input
+              type="number"
+              class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-colors duration-200"
+              [class.border-red-300]="errorValidacion() && precioMaxLocal()"
+              [class.focus:ring-red-500]="errorValidacion() && precioMaxLocal()"
+              [class.focus:border-red-500]="
+                errorValidacion() && precioMaxLocal()
+              "
+              [placeholder]="placeholder().max"
+              [value]="precioMaxLocal() || ''"
+              [disabled]="disabled()"
+              [step]="step()"
+              min="0"
+              (input)="onPrecioMaxChange($event)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Separador Visual -->
+      <div class="flex items-center">
+        <div class="flex-1 border-t border-gray-200"></div>
+        <span class="px-3 text-xs font-medium text-gray-500 bg-white">O</span>
+        <div class="flex-1 border-t border-gray-200"></div>
+      </div>
+
+      <!-- Rangos Rápidos Adicionales -->
+      <div>
+        <p class="text-xs font-medium text-gray-500 mb-2">Rangos rápidos:</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button
+            type="button"
+            class="px-3 py-2 text-xs text-center border border-gray-200 rounded-md hover:bg-gray-50 transition-colors duration-200"
+            (click)="
+              precioMinLocal.set(0); precioMaxLocal.set(25); emitirCambio()
+            "
+            [disabled]="disabled()"
+          >
+            S/. 0 - 25
+          </button>
+          <button
+            type="button"
+            class="px-3 py-2 text-xs text-center border border-gray-200 rounded-md hover:bg-gray-50 transition-colors duration-200"
+            (click)="
+              precioMinLocal.set(25); precioMaxLocal.set(75); emitirCambio()
+            "
+            [disabled]="disabled()"
+          >
+            S/. 25 - 75
+          </button>
+          <button
+            type="button"
+            class="px-3 py-2 text-xs text-center border border-gray-200 rounded-md hover:bg-gray-50 transition-colors duration-200"
+            (click)="
+              precioMinLocal.set(75); precioMaxLocal.set(150); emitirCambio()
+            "
+            [disabled]="disabled()"
+          >
+            S/. 75 - 150
+          </button>
+          <button
+            type="button"
+            class="px-3 py-2 text-xs text-center border border-gray-200 rounded-md hover:bg-gray-50 transition-colors duration-200"
+            (click)="
+              precioMinLocal.set(150);
+              precioMaxLocal.set(undefined);
+              emitirCambio()
+            "
+            [disabled]="disabled()"
+          >
+            S/. 150+
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Acciones del Footer -->
+    @if (tieneRangoActivo()) {
+    <div class="pt-4 border-t border-gray-100 mt-4">
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-600">
+          @if (rangoFormateado()) {
+          <span class="font-medium">Filtro activo:</span>
+          <span class="text-green-600 font-semibold ml-1">{{
+            rangoFormateado()
+          }}</span>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors duration-200"
+          (click)="limpiarRango()"
+          [disabled]="disabled()"
+        >
+          Limpiar
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+</div>

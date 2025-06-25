@@ -1,0 +1,253 @@
+/* Estilos para ResumenCarritoComponent */
+
+/* Botón de checkout destacado */
+.checkout-button {
+  background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.checkout-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.checkout-button:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.checkout-button:hover:not(:disabled) {
+  background: linear-gradient(45deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(59, 130, 246, 0.4);
+}
+
+.checkout-button:disabled {
+  background: #d1d5db !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Botón secundario mejorado */
+.secondary-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.secondary-button:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Progreso hacia envío gratis */
+.progress-bar {
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animación para el descuento aplicado */
+.discount-applied {
+  animation: slideInDown 0.4s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efectos para el formulario de cupón */
+.coupon-form {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+  }
+}
+
+/* Estados de cupón */
+.coupon-success {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border: 1px solid #10b981;
+}
+
+.coupon-error {
+  background: linear-gradient(135deg, #fee2e2, #fca5a5);
+  border: 1px solid #ef4444;
+}
+
+/* Input de cupón con efectos */
+.coupon-input {
+  transition: all 0.3s ease;
+}
+
+.coupon-input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+/* Botón dashed mejorado */
+.dashed-button {
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffffff, #f9fafb);
+}
+
+.dashed-button:hover {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+/* Garantías con iconos animados */
+.guarantee-item {
+  transition: all 0.2s ease;
+}
+
+.guarantee-item:hover {
+  transform: translateY(-1px);
+  color: #374151;
+}
+
+.guarantee-item svg {
+  transition: transform 0.2s ease;
+}
+
+.guarantee-item:hover svg {
+  transform: scale(1.1);
+}
+
+/* Total destacado */
+.total-highlight {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Descuentos con animación */
+.discount-item {
+  animation: fadeInLeft 0.4s ease-out;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Progreso de envío gratis */
+.shipping-progress {
+  background: linear-gradient(90deg, #dbeafe, #bfdbfe);
+  position: relative;
+  overflow: hidden;
+}
+
+.shipping-progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Estados de carga */
+.loading-overlay {
+  backdrop-filter: blur(2px);
+  transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .guarantee-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .checkout-button {
+    font-size: 0.9rem;
+    padding: 0.875rem 1rem;
+  }
+}
+
+/* Focus states para accesibilidad */
+.focus-visible:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+/* Efectos de pulso para elementos importantes */
+.pulse-subtle {
+  animation: pulseSubtle 3s ease-in-out infinite;
+}
+
+@keyframes pulseSubtle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* Truncate para textos largos */
+.truncate-discount {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sticky enhancements */
+.sticky-enhanced {
+  transition: box-shadow 0.3s ease;
+}
+
+.sticky-enhanced.scrolled {
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}

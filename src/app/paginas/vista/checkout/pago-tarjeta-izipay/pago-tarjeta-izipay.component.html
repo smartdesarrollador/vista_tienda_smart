@@ -1,0 +1,213 @@
+<div class="p-6">
+  <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+    <svg
+      class="w-6 h-6 mr-2 text-blue-600"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+      ></path>
+    </svg>
+    Método de Pago
+  </h2>
+
+  <!-- Selector de método de pago -->
+  <div class="space-y-3 mb-6">
+    <label
+      class="flex items-center p-4 border-2 border-blue-500 bg-blue-50 rounded-lg cursor-pointer"
+    >
+      <input
+        type="radio"
+        name="metodoPago"
+        value="1"
+        checked
+        class="text-blue-600 focus:ring-blue-500"
+      />
+      <div class="ml-3 flex-1">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <span class="font-medium">Tarjeta de Crédito/Débito</span>
+            <div class="ml-2 flex space-x-1">
+              <img
+                src="https://cdn.worldvectorlogo.com/logos/visa-10.svg"
+                alt="Visa"
+                class="h-6"
+              />
+              <img
+                src="https://cdn.worldvectorlogo.com/logos/mastercard-2.svg"
+                alt="Mastercard"
+                class="h-6"
+              />
+            </div>
+          </div>
+          <span class="text-sm text-green-600 font-medium">Seguro</span>
+        </div>
+        <p class="text-sm text-gray-600">Pago seguro con Izipay</p>
+      </div>
+    </label>
+  </div>
+
+  <!-- Formulario de pago con Izipay -->
+  <div class="border rounded-lg p-6 bg-gray-50">
+    <div class="text-center mb-6">
+      <h4 class="text-lg font-medium text-gray-900 mb-3">
+        Pago con tarjeta de crédito/débito
+      </h4>
+      <img
+        src="https://github.com/izipay-pe/Imagenes/blob/main/logo_tarjetas_aceptadas/logo-tarjetas-aceptadas-351x42.png?raw=true"
+        alt="Tarjetas aceptadas"
+        class="h-10 mx-auto mb-4"
+      />
+    </div>
+
+    <!-- Loading indicator -->
+    @if (cargando()) {
+    <div class="text-center py-12">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"
+      ></div>
+      <p class="mt-4 text-gray-600 font-medium">
+        Cargando formulario de pago seguro...
+      </p>
+      <p class="text-sm text-gray-500 mt-2">
+        Por favor espera mientras preparamos el pago
+      </p>
+    </div>
+    }
+
+    <!-- Contenedor requerido por Izipay -->
+    <div
+      class="bg-white rounded-lg p-4 shadow-sm"
+      [class.opacity-50]="cargando()"
+      [class.pointer-events-none]="cargando()"
+      #izipayContainer
+    >
+      <div id="micuentawebstd_rest_wrapper">
+        <div class="kr-embedded" kr-popin="true"></div>
+      </div>
+    </div>
+
+    <!-- Error display -->
+    @if (error()) {
+    <div class="text-center py-8">
+      <div
+        class="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4"
+      >
+        <svg
+          class="w-8 h-8 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+      </div>
+      <h5 class="text-lg font-medium text-red-900 mb-2">
+        Error al cargar el pago
+      </h5>
+      <p class="text-sm text-red-600 mb-4">{{ error() }}</p>
+      <button
+        (click)="reintentatCargarFormulario()"
+        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+      >
+        Reintentar
+      </button>
+    </div>
+    }
+
+    <!-- Información de seguridad -->
+    <div
+      class="mt-6 flex items-center justify-center space-x-4 text-xs text-gray-500"
+    >
+      <div class="flex items-center">
+        <svg
+          class="w-4 h-4 mr-1 text-green-500"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        Pago seguro SSL
+      </div>
+      <div class="flex items-center">
+        <svg
+          class="w-4 h-4 mr-1 text-green-500"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M18 8a6 6 0 01-7.743 5.743L10 14l-4 1-1-4 .257-.257A6 6 0 1118 8zm-6-2a2 2 0 11-4 0 2 2 0 014 0z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        Protegido por Izipay
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones de navegación -->
+  <div class="mt-6 flex justify-between">
+    <button
+      (click)="onAnterior()"
+      class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center"
+    >
+      <svg
+        class="w-4 h-4 mr-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"
+        ></path>
+      </svg>
+      Anterior
+    </button>
+
+    <button
+      (click)="procesarPago()"
+      [disabled]="!puedeProceserPago() || cargando()"
+      class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+    >
+      @if (cargando()) {
+      <div
+        class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"
+      ></div>
+      <span>Procesando...</span>
+      } @else {
+      <svg
+        class="w-5 h-5 mr-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+        ></path>
+      </svg>
+      <span>Pagar Seguro</span>
+      }
+    </button>
+  </div>
+</div>

@@ -1,0 +1,397 @@
+<!-- Contenedor principal -->
+<div class="min-h-screen bg-gray-50">
+  <!-- Breadcrumb -->
+  <nav class="bg-white border-b border-gray-200" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center py-4">
+        <ol class="flex items-center space-x-2">
+          @for (item of breadcrumb(); track item.url) {
+          <li class="flex items-center">
+            @if ($index > 0) {
+            <svg
+              class="flex-shrink-0 h-4 w-4 text-gray-300 mx-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            } @if ($index < breadcrumb().length - 1) {
+            <a
+              [href]="item.url"
+              class="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors duration-200"
+            >
+              {{ item.label }}
+            </a>
+            } @else {
+            <span class="text-sm font-medium text-gray-900">{{
+              item.label
+            }}</span>
+            }
+          </li>
+          }
+        </ol>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header de la categoría -->
+  @if (categoria(); as cat) {
+  <div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="md:flex md:items-center md:justify-between">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl sm:truncate">
+            {{ cat.nombre }}
+          </h1>
+          @if (cat.descripcion) {
+          <p class="mt-2 text-lg text-gray-600 max-w-4xl">
+            {{ cat.descripcion }}
+          </p>
+          }
+          <div class="mt-4 flex items-center text-sm text-gray-500">
+            <span>{{ totalProductos() }} productos encontrados</span>
+          </div>
+        </div>
+        @if (cat.imagen) {
+        <div class="mt-6 md:mt-0 md:ml-8 flex-shrink-0">
+          <img
+            [src]="getImagenUrl(cat.imagen)"
+            [alt]="cat.nombre"
+            class="w-20 h-20 md:w-24 md:h-24 rounded-lg object-cover"
+          />
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Loading spinner -->
+  @if (loading()) {
+  <div class="flex justify-center items-center py-16">
+    <div
+      class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+    ></div>
+  </div>
+  }
+
+  <!-- Error message -->
+  @if (error() && !loading()) {
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-red-50 border border-red-200 rounded-md p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg
+            class="h-5 w-5 text-red-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Error</h3>
+          <p class="mt-1 text-sm text-red-700">{{ error() }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Contenido principal -->
+  @if (!loading() && !error() && hasProductos()) {
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Barra de herramientas -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div
+        class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0"
+      >
+        <!-- Información de resultados y ordenamiento -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4"
+        >
+          <span class="text-sm text-gray-700">
+            Mostrando {{ (currentPage() - 1) * 24 + 1 }} -
+            {{ Math.min(currentPage() * 24, totalProductos()) }} de
+            {{ totalProductos() }} productos
+          </span>
+
+          <!-- Selector de ordenamiento -->
+          <div class="flex items-center space-x-2">
+            <label for="ordenamiento" class="text-sm font-medium text-gray-700"
+              >Ordenar por:</label
+            >
+            <select
+              id="ordenamiento"
+              [value]="ordenamiento()"
+              (change)="cambiarOrdenamiento($any($event.target).value)"
+              class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              @for (opcion of opcionesOrdenamiento; track opcion.value) {
+              <option [value]="opcion.value">{{ opcion.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Controles de vista -->
+        <div class="flex items-center space-x-2">
+          <!-- Toggle vista grid/lista -->
+          <div class="flex bg-gray-100 rounded-lg p-1">
+            <button
+              type="button"
+              (click)="cambiarVista('grid')"
+              [class]="
+                isGridView()
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              "
+              class="p-2 rounded-md text-sm font-medium transition-colors duration-200"
+              title="Vista en cuadrícula"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              (click)="cambiarVista('lista')"
+              [class]="
+                !isGridView()
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              "
+              class="p-2 rounded-md text-sm font-medium transition-colors duration-200"
+              title="Vista en lista"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Selector de productos por página -->
+          <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-700">Por página:</span>
+            <select
+              [value]="filtros().per_page || 24"
+              (change)="cambiarPorPagina(+$any($event.target).value)"
+              class="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              @for (opcion of opcionesPorPagina; track opcion) {
+              <option [value]="opcion">{{ opcion }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid/Lista de productos -->
+    <div
+      [class]="
+        isGridView()
+          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+          : 'space-y-4'
+      "
+    >
+      @for (producto of productos(); track producto.id) {
+      <app-producto-card
+        [producto]="producto"
+        [vista]="vista()"
+        [configuracion]="productoCardConfig"
+        [esFavorito]="false"
+        (onProductoClick)="onProductoClick($event)"
+        (onCarritoClick)="onCarritoClick($event)"
+        (onFavoritoToggle)="onFavoritoToggle($event)"
+        (onVistaRapida)="onVistaRapida($event)"
+      />
+      }
+    </div>
+
+    <!-- Paginación -->
+    @if (lastPage() > 1) {
+    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <nav class="flex items-center justify-between">
+        <!-- Información de página actual -->
+        <div class="flex-1 flex justify-between sm:hidden">
+          <button
+            type="button"
+            (click)="paginaAnterior()"
+            [disabled]="!hasPrevPage()"
+            [class]="
+              !hasPrevPage()
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:bg-gray-50'
+            "
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white transition-colors duration-200"
+          >
+            Anterior
+          </button>
+          <button
+            type="button"
+            (click)="paginaSiguiente()"
+            [disabled]="!hasNextPage()"
+            [class]="
+              !hasNextPage()
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:bg-gray-50'
+            "
+            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white transition-colors duration-200"
+          >
+            Siguiente
+          </button>
+        </div>
+
+        <!-- Paginación completa para desktop -->
+        <div
+          class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
+        >
+          <div>
+            <p class="text-sm text-gray-700">
+              Mostrando página
+              <span class="font-medium">{{ currentPage() }}</span> de
+              <span class="font-medium">{{ lastPage() }}</span>
+            </p>
+          </div>
+          <div>
+            <nav
+              class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
+              <!-- Botón Anterior -->
+              <button
+                type="button"
+                (click)="paginaAnterior()"
+                [disabled]="!hasPrevPage()"
+                [class]="
+                  !hasPrevPage()
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-gray-50'
+                "
+                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 transition-colors duration-200"
+              >
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              <!-- Números de página -->
+              @for (pagina of getRangoPaginas(); track $index) { @if (pagina ===
+              -1) {
+              <span
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+              >
+                ...
+              </span>
+              } @else {
+              <button
+                type="button"
+                (click)="cambiarPagina(pagina)"
+                [class]="
+                  pagina === currentPage()
+                    ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                "
+                class="relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors duration-200"
+              >
+                {{ pagina }}
+              </button>
+              } }
+
+              <!-- Botón Siguiente -->
+              <button
+                type="button"
+                (click)="paginaSiguiente()"
+                [disabled]="!hasNextPage()"
+                [class]="
+                  !hasNextPage()
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-gray-50'
+                "
+                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 transition-colors duration-200"
+              >
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </nav>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Estado sin productos -->
+  @if (!loading() && !error() && !hasProductos()) {
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center">
+      <svg
+        class="mx-auto h-12 w-12 text-gray-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 48 48"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1"
+          d="M34 40h10v-4a6 6 0 00-10.712-3.714M34 40H14m20 0v-4a9.971 9.971 0 00-.712-3.714M14 40H4v-4a6 6 0 0110.713-3.714M14 40v-4c0-1.313.253-2.566.713-3.714m0 0A9.971 9.971 0 0118 28v-4l8-8 8 8v4a9.971 9.971 0 013.287 4.286"
+        />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">
+        No hay productos en esta categoría
+      </h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Pronto agregaremos más productos. ¡Vuelve pronto!
+      </p>
+      <div class="mt-6">
+        <a
+          href="/productos"
+          class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+        >
+          Ver todos los productos
+        </a>
+      </div>
+    </div>
+  </div>
+  }
+</div>

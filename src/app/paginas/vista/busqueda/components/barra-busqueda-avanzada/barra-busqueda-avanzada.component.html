@@ -1,0 +1,453 @@
+<!-- Formulario principal de búsqueda -->
+<form [formGroup]="busquedaForm" (ngSubmit)="onSubmit()" class="w-full">
+  <!-- Barra principal de búsqueda -->
+  <div class="flex flex-col lg:flex-row gap-4">
+    <!-- Selector de categorías -->
+    <div class="relative lg:w-64">
+      <select
+        formControlName="categoria"
+        (change)="onCategoriaChange($any($event.target).value)"
+        class="w-full px-4 py-3 pr-10 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer hover:border-gray-400 transition-colors duration-200"
+      >
+        <option [value]="null">Todas las categorías</option>
+        @for (categoria of categorias; track categoria.id) {
+        <option [value]="categoria.id" class="cursor-pointer hover:bg-gray-50">
+          {{ categoria.nombre }}
+        </option>
+        }
+      </select>
+
+      <!-- Icono dropdown -->
+      <div
+        class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none"
+      >
+        <svg
+          class="w-5 h-5 text-gray-400"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Campo de búsqueda con autocompletado -->
+    <div class="flex-1 relative">
+      <div class="relative">
+        <!-- Input de búsqueda -->
+        <div
+          class="flex rounded-lg border border-gray-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+        >
+          <input
+            #inputBusqueda
+            type="text"
+            formControlName="termino"
+            [placeholder]="placeholder"
+            (focus)="onFocusInput()"
+            (blur)="onBlurInput()"
+            class="flex-1 px-4 py-3 text-gray-900 placeholder-gray-500 bg-transparent border-none rounded-l-lg focus:outline-none"
+          />
+
+          <!-- Botón limpiar (visible solo si hay texto) -->
+          @if (busquedaForm.get('termino')?.value) {
+          <button
+            type="button"
+            (click)="limpiarFormulario()"
+            class="px-3 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </button>
+          }
+
+          <!-- Botón buscar -->
+          <button
+            type="submit"
+            [disabled]="busquedaForm.invalid"
+            class="px-6 py-3 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Panel de autocompletado -->
+        @if (mostrarAutocompletado() && autocompletadoHabilitado) {
+        <div
+          class="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto"
+          (mousedown)="$event.preventDefault()"
+        >
+          <!-- Loading state -->
+          @if (cargandoAutocompletado()) {
+          <div class="p-4 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <div
+                class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"
+              ></div>
+              <span class="text-sm text-gray-600">Buscando...</span>
+            </div>
+          </div>
+          } @else {
+
+          <!-- Productos -->
+          @if (productosAutocompletado().length > 0) {
+          <div class="border-b border-gray-100">
+            <div
+              class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50"
+            >
+              Productos
+            </div>
+            @for (producto of productosAutocompletado(); track producto.id; let
+            i = $index) {
+            <button
+              type="button"
+              (click)="testClick(producto)"
+              (mousedown)="testClick(producto)"
+              [class]="
+                indiceBusquedaSeleccionado() === i
+                  ? 'bg-blue-50'
+                  : 'hover:bg-gray-50'
+              "
+              class="w-full px-4 py-3 text-left flex items-center gap-3 transition-colors duration-150"
+            >
+              <!-- Imagen del producto -->
+              @if (producto.imagen_principal) {
+              <img
+                [src]="producto.imagen_principal"
+                [alt]="producto.nombre"
+                class="w-10 h-10 object-cover rounded-lg bg-gray-100"
+              />
+              } @else {
+              <div
+                class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+              }
+
+              <!-- Info del producto -->
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                  {{ producto.nombre }}
+                </p>
+                <p class="text-sm text-gray-500">{{ producto.marca }}</p>
+              </div>
+
+              <!-- Precio -->
+              <div class="text-right">
+                <p class="text-sm font-semibold text-gray-900">
+                  {{ formatearPrecio(producto.precio) }}
+                </p>
+              </div>
+            </button>
+            }
+          </div>
+          }
+
+          <!-- Categorías -->
+          @if (categoriasAutocompletado().length > 0) {
+          <div class="border-b border-gray-100">
+            <div
+              class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50"
+            >
+              Categorías
+            </div>
+            @for (categoria of categoriasAutocompletado(); track categoria.id;
+            let i = $index) {
+            <button
+              type="button"
+              (click)="seleccionarCategoriaAutocompletado(categoria)"
+              [class]="
+                indiceBusquedaSeleccionado() ===
+                productosAutocompletado().length + i
+                  ? 'bg-blue-50'
+                  : 'hover:bg-gray-50'
+              "
+              class="w-full px-4 py-3 text-left flex items-center gap-3 transition-colors duration-150"
+            >
+              <div
+                class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 text-blue-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
+                  ></path>
+                </svg>
+              </div>
+
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">
+                  {{ categoria.nombre }}
+                </p>
+                <p class="text-xs text-gray-500">Categoría</p>
+              </div>
+            </button>
+            }
+          </div>
+          }
+
+          <!-- Marcas -->
+          @if (marcasAutocompletado().length > 0) {
+          <div class="border-b border-gray-100">
+            <div
+              class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50"
+            >
+              Marcas
+            </div>
+            @for (marca of marcasAutocompletado(); track marca; let i = $index)
+            {
+            <button
+              type="button"
+              (click)="seleccionarMarcaAutocompletado(marca)"
+              [class]="
+                indiceBusquedaSeleccionado() ===
+                productosAutocompletado().length +
+                  categoriasAutocompletado().length +
+                  i
+                  ? 'bg-blue-50'
+                  : 'hover:bg-gray-50'
+              "
+              class="w-full px-4 py-3 text-left flex items-center gap-3 transition-colors duration-150"
+            >
+              <div
+                class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 text-green-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 2L3 7v11a1 1 0 001 1h12a1 1 0 001-1V7l-7-5zM10 1a1 1 0 00-.7.3l-7 5A1 1 0 002 7v11a3 3 0 003 3h10a3 3 0 003-3V7a1 1 0 00-.3-.7l-7-5A1 1 0 0010 1z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">{{ marca }}</p>
+                <p class="text-xs text-gray-500">Marca</p>
+              </div>
+            </button>
+            }
+          </div>
+          }
+
+          <!-- Búsquedas populares -->
+          @if (busquedasPopulares().length > 0) {
+          <div>
+            <div
+              class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50"
+            >
+              Búsquedas populares
+            </div>
+            @for (busqueda of busquedasPopulares(); track busqueda; let i =
+            $index) {
+            <button
+              type="button"
+              (click)="seleccionarBusquedaPopular(busqueda)"
+              [class]="
+                indiceBusquedaSeleccionado() ===
+                productosAutocompletado().length +
+                  categoriasAutocompletado().length +
+                  marcasAutocompletado().length +
+                  i
+                  ? 'bg-blue-50'
+                  : 'hover:bg-gray-50'
+              "
+              class="w-full px-4 py-3 text-left flex items-center gap-3 transition-colors duration-150"
+            >
+              <div
+                class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 text-purple-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">{{ busqueda }}</p>
+                <p class="text-xs text-gray-500">Búsqueda popular</p>
+              </div>
+            </button>
+            }
+          </div>
+          } }
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Filtros rápidos -->
+    @if (mostrarFiltrosRapidos) {
+    <div class="flex flex-col sm:flex-row gap-3">
+      <!-- El selector de categorías se movió a la barra principal -->
+
+      <!-- Botón filtros avanzados -->
+      <!-- Botón eliminado por requerimiento -->
+    </div>
+    }
+  </div>
+
+  <!-- Panel de filtros avanzados -->
+  @if (mostrarFiltrosAvanzados()) {
+  <div
+    class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 animate-fade-in-up"
+  >
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <!-- Filtro de precio mínimo -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Precio mínimo
+        </label>
+        <div class="relative">
+          <span
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+            >S/</span
+          >
+          <input
+            type="number"
+            formControlName="precio_min"
+            placeholder="0"
+            min="0"
+            class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+      </div>
+
+      <!-- Filtro de precio máximo -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Precio máximo
+        </label>
+        <div class="relative">
+          <span
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+            >S/</span
+          >
+          <input
+            type="number"
+            formControlName="precio_max"
+            placeholder="Sin límite"
+            min="0"
+            class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+      </div>
+
+      <!-- Rangos de precio predefinidos -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Rangos populares
+        </label>
+        <div class="flex flex-wrap gap-2">
+          @for (rango of rangosPrecioPopulares(); track rango.label) {
+          <button
+            type="button"
+            (click)="seleccionarRangoPrecio(rango)"
+            class="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-full hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-colors duration-200"
+          >
+            {{ rango.label }}
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros aplicados y acciones -->
+    @if (tieneFiltrosAplicados()) {
+    <div class="mt-4 pt-4 border-t border-gray-300">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <!-- Resumen de filtros -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="text-sm font-medium text-gray-700"
+            >Filtros aplicados:</span
+          >
+
+          @if (textoCategoria()) {
+          <span
+            class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
+              ></path>
+            </svg>
+            {{ textoCategoria() }}
+          </span>
+          } @if (textoRangoPrecios()) {
+          <span
+            class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"
+              ></path>
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            {{ textoRangoPrecios() }}
+          </span>
+          }
+        </div>
+
+        <!-- Botón limpiar filtros -->
+        <button
+          type="button"
+          (click)="limpiarRangoPrecios()"
+          class="text-sm text-red-600 hover:text-red-800 underline"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</form>

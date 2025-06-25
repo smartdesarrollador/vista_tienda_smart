@@ -1,0 +1,282 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header del Checkout -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Finalizar Compra</h1>
+      <p class="text-gray-600">Completa tu pedido en pocos pasos</p>
+    </div>
+
+    <!-- Barra de Progreso -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        @for (paso of pasos; track paso.numero) {
+        <div
+          class="flex items-center"
+          [class]="paso.numero < pasos.length ? 'flex-1' : ''"
+        >
+          <!-- Círculo del paso -->
+          <div
+            class="flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300"
+            [ngClass]="{
+              'bg-blue-600 border-blue-600 text-white':
+                getClasePaso(paso.numero) === 'active',
+              'bg-green-600 border-green-600 text-white':
+                getClasePaso(paso.numero) === 'completed',
+              'bg-gray-200 border-gray-300 text-gray-400':
+                getClasePaso(paso.numero) === 'pending'
+            }"
+            (click)="irAPaso(paso.numero)"
+            [class.cursor-pointer]="
+              paso.numero < pasoActual() || puedeAvanzarAPaso(paso.numero)
+            "
+          >
+            @if (getClasePaso(paso.numero) === 'completed') {
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            } @else {
+            <span class="text-sm font-medium">{{ paso.numero }}</span>
+            }
+          </div>
+
+          <!-- Información del paso -->
+          <div class="ml-3 hidden sm:block">
+            <p
+              class="text-sm font-medium"
+              [ngClass]="{
+                'text-blue-600': getClasePaso(paso.numero) === 'active',
+                'text-green-600': getClasePaso(paso.numero) === 'completed',
+                'text-gray-400': getClasePaso(paso.numero) === 'pending'
+              }"
+            >
+              {{ paso.titulo }}
+            </p>
+            <p class="text-xs text-gray-500">{{ paso.tiempo }}</p>
+          </div>
+
+          <!-- Línea de conexión -->
+          @if (paso.numero < pasos.length) {
+          <div
+            class="flex-1 h-0.5 mx-4 transition-all duration-300"
+            [ngClass]="{
+              'bg-green-600': paso.numero < pasoActual(),
+              'bg-blue-600': paso.numero === pasoActual(),
+              'bg-gray-300': paso.numero > pasoActual()
+            }"
+          ></div>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Barra de progreso visual -->
+      <div class="mt-4">
+        <div class="bg-gray-200 rounded-full h-2">
+          <div
+            class="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full transition-all duration-500"
+            [style.width.%]="getProgreso()"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Formulario del Checkout -->
+      <div class="lg:col-span-8">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+          <!-- Paso 1: Datos del Cliente -->
+          @if (pasoActual() === 1) {
+          <app-datos-cliente
+            (datosActualizados)="onDatosPersonalesActualizados($event)"
+            (siguiente)="onSiguienteDesdeCliente()"
+          ></app-datos-cliente>
+          }
+
+          <!-- Paso 2: Envío y Resumen -->
+          @if (pasoActual() === 2) {
+          <app-envio-resumen
+            [datosPersonales]="datosPersonales()"
+            (direccionActualizada)="onDireccionEnvioActualizada($event)"
+            (metodoEnvioSeleccionado)="onMetodoEnvioSeleccionado($event)"
+            (anterior)="onAnteriorDesdeEnvio()"
+            (siguiente)="onSiguienteDesdeEnvio()"
+          ></app-envio-resumen>
+          }
+
+          <!-- Paso 3: Método de Pago -->
+          @if (pasoActual() === 3) {
+          <app-pago-tarjeta-izipay
+            [datosPersonales]="datosPersonales()"
+            [direccionEnvio]="direccionEnvio()"
+            [metodoEnvio]="metodoEnvio()"
+            [itemsCarrito]="itemsCarrito()"
+            [totalCarrito]="totalCarrito()"
+            (pagoExitoso)="onPagoExitoso($event)"
+            (anterior)="onAnteriorDesdePago()"
+          ></app-pago-tarjeta-izipay>
+          }
+
+          <!-- Paso 4: Confirmación -->
+          @if (pasoActual() === 4) {
+          <app-confirmacion
+            [pedidoId]="pedidoFinalId()"
+            [datosPersonales]="datosPersonales()"
+            [direccionEnvio]="direccionEnvio()"
+            [metodoEnvio]="metodoEnvio()"
+            [metodoPago]="metodoPago()"
+            [totalCarrito]="totalCarrito()"
+          ></app-confirmacion>
+          }
+        </div>
+      </div>
+
+      <!-- Resumen del Pedido (Sidebar) -->
+      <div class="lg:col-span-4">
+        <div class="bg-white rounded-xl shadow-lg sticky top-8">
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              Resumen del Pedido
+            </h3>
+
+            <!-- Items del carrito -->
+            <div class="space-y-4 mb-6">
+              @for (item of itemsCarrito(); track item.producto_id) {
+              <div class="flex items-center space-x-3">
+                <img
+                  [src]="
+                    item.producto?.imagen_principal ||
+                    '/assets/img/producto-default.jpg'
+                  "
+                  [alt]="item.producto?.nombre || 'Producto'"
+                  class="w-12 h-12 object-cover rounded-lg"
+                />
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate">
+                    {{ item.producto?.nombre || "Producto" }}
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    Cantidad: {{ item.cantidad }}
+                  </p>
+                </div>
+                <p class="text-sm font-medium text-gray-900">
+                  S/ {{ item.subtotal.toFixed(2) }}
+                </p>
+              </div>
+              }
+            </div>
+
+            <!-- Totales -->
+            <div class="border-t border-gray-200 pt-4 space-y-2">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Subtotal</span>
+                <span class="text-gray-900"
+                  >S/ {{ totalCarrito().toFixed(2) }}</span
+                >
+              </div>
+
+              @if (metodoEnvio()) {
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Envío</span>
+                <span class="text-gray-900"
+                  >S/ {{ metodoEnvio()?.precio?.toFixed(2) || "0.00" }}</span
+                >
+              </div>
+              }
+
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">IGV (18%)</span>
+                <span class="text-gray-900"
+                  >S/ {{ (totalCarrito() * 0.18).toFixed(2) }}</span
+                >
+              </div>
+
+              <div
+                class="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-200"
+              >
+                <span>Total</span>
+                <span
+                  >S/
+                  {{
+                    (
+                      (totalCarrito() + (metodoEnvio()?.precio || 0)) *
+                      1.18
+                    ).toFixed(2)
+                  }}</span
+                >
+              </div>
+            </div>
+
+            <!-- Garantías -->
+            <div class="mt-6 space-y-2">
+              <div class="flex items-center text-sm text-gray-600">
+                <svg
+                  class="w-4 h-4 mr-2 text-green-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                Pago 100% seguro
+              </div>
+              <div class="flex items-center text-sm text-gray-600">
+                <svg
+                  class="w-4 h-4 mr-2 text-green-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                Garantía de devolución
+              </div>
+              <div class="flex items-center text-sm text-gray-600">
+                <svg
+                  class="w-4 h-4 mr-2 text-green-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                Soporte 24/7
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje de Error Global -->
+    @if (error()) {
+    <div
+      class="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50"
+    >
+      <div class="flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        {{ error() }}
+      </div>
+    </div>
+    }
+  </div>
+</div>

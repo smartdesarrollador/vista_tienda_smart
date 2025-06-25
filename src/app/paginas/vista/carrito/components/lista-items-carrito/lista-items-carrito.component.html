@@ -1,0 +1,280 @@
+<!-- Contenedor principal de la lista de items -->
+<div class="space-y-4">
+  <!-- Alerta de items con problemas -->
+  @if (tieneItemsConProblemas()) {
+  <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+    <div class="flex">
+      <svg
+        class="flex-shrink-0 h-5 w-5 text-orange-400"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-orange-800">
+          Algunos productos tienen problemas de disponibilidad
+        </h3>
+        <p class="mt-1 text-sm text-orange-700">
+          Revisa los productos marcados y ajusta las cantidades según la
+          disponibilidad.
+        </p>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Lista de items -->
+  @for (item of itemsOrdenados(); track item.id) {
+  <div
+    class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-md"
+  >
+    <div class="p-4 sm:p-6">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <!-- Imagen del producto -->
+        <div class="flex-shrink-0">
+          <div class="relative">
+            <img
+              [src]="construirUrlImagen(item.imagen)"
+              [alt]="item.nombre"
+              class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity duration-200"
+              (click)="verProducto(item.slug)"
+              loading="lazy"
+              (error)="onImagenError($event)"
+            />
+
+            <!-- Badge de descuento -->
+            @if (tieneDescuento(item)) {
+            <div
+              class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
+            >
+              -{{ calcularDescuento(item.precio, item.precio_oferta!) }}%
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Información del producto -->
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-col sm:flex-row sm:justify-between">
+            <!-- Detalles del producto -->
+            <div class="flex-1 min-w-0 mr-4">
+              <!-- Nombre del producto -->
+              <h3 class="text-lg font-medium text-gray-900 truncate">
+                <button
+                  (click)="verProducto(item.slug)"
+                  class="hover:text-blue-600 transition-colors duration-200 text-left"
+                >
+                  {{ item.nombre }}
+                </button>
+              </h3>
+
+              <!-- SKU -->
+              @if (item.sku) {
+              <p class="text-sm text-gray-500 mt-1">SKU: {{ item.sku }}</p>
+              }
+
+              <!-- Variaciones -->
+              @if (formatearVariaciones(item)) {
+              <div class="mt-2 flex flex-wrap gap-2">
+                <!-- Color swatch si existe -->
+                @if (item.variacion?.color) {
+                <div class="flex items-center gap-1">
+                  <div
+                    class="w-4 h-4 rounded-full border border-gray-300"
+                    [style.backgroundColor]="item.variacion!.color!.hex"
+                  ></div>
+                  <span class="text-sm text-gray-600">{{
+                    item.variacion!.color!.nombre
+                  }}</span>
+                </div>
+                }
+
+                <!-- Otras variaciones -->
+                @if (item.variacion?.talla) {
+                <span
+                  class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800"
+                >
+                  Talla: {{ item.variacion!.talla }}
+                </span>
+                }
+              </div>
+              }
+
+              <!-- Estado del stock -->
+              <div class="mt-3">
+                <span
+                  [class]="
+                    'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ' +
+                    obtenerEstadoStock(item).clase
+                  "
+                >
+                  <svg
+                    class="w-3 h-3 mr-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    @switch (obtenerEstadoStock(item).estado) { @case
+                    ('disponible') {
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    />
+                    } @case ('bajo') {
+                    <path
+                      fill-rule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clip-rule="evenodd"
+                    />
+                    } @default {
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clip-rule="evenodd"
+                    />
+                    } }
+                  </svg>
+                  {{ obtenerEstadoStock(item).mensaje }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Controles y precio -->
+            <div class="flex flex-col items-end space-y-3 mt-4 sm:mt-0">
+              <!-- Precio -->
+              <div class="text-right">
+                <!-- Precio con descuento -->
+                @if (tieneDescuento(item)) {
+                <div class="flex flex-col items-end">
+                  <span class="text-lg font-bold text-green-600">
+                    {{ formatearPrecio(item.precio_oferta!) }}
+                  </span>
+                  <span class="text-sm text-gray-500 line-through">
+                    {{ formatearPrecio(item.precio) }}
+                  </span>
+                </div>
+                } @else {
+                <span class="text-lg font-bold text-gray-900">
+                  {{ formatearPrecio(item.precio) }}
+                </span>
+                }
+              </div>
+
+              <!-- Selector de cantidad -->
+              <div class="flex items-center border border-gray-300 rounded-lg">
+                <!-- Botón decrementar -->
+                <button
+                  (click)="decrementarCantidad(item)"
+                  [disabled]="cargando() || item.cantidad <= 1"
+                  class="px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M20 12H4"
+                    />
+                  </svg>
+                </button>
+
+                <!-- Input de cantidad -->
+                <input
+                  type="number"
+                  [value]="item.cantidad"
+                  (change)="onCantidadChange(item, $event)"
+                  [max]="item.stock_disponible"
+                  min="1"
+                  [disabled]="cargando()"
+                  class="w-16 px-2 py-2 text-center border-0 focus:ring-0 text-sm font-medium disabled:bg-gray-100 disabled:cursor-not-allowed"
+                />
+
+                <!-- Botón incrementar -->
+                <button
+                  (click)="incrementarCantidad(item)"
+                  [disabled]="
+                    cargando() || item.cantidad >= item.stock_disponible
+                  "
+                  class="px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6v12m6-6H6"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Subtotal -->
+              <div class="text-right">
+                <p class="text-sm text-gray-600">Subtotal</p>
+                <p class="text-lg font-bold text-gray-900">
+                  {{ formatearPrecio(item.subtotal) }}
+                </p>
+              </div>
+
+              <!-- Botón eliminar -->
+              <button
+                (click)="removerItem(item)"
+                [disabled]="cargando()"
+                class="flex items-center text-sm text-red-600 hover:text-red-800 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                <svg
+                  class="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de carga por item -->
+    @if (cargando()) {
+    <div
+      class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center"
+    >
+      <div
+        class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"
+      ></div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Estado vacío (no debería mostrarse aquí, pero por seguridad) -->
+  @if (itemsOrdenados().length === 0 && !cargando()) {
+  <div class="text-center py-8">
+    <p class="text-gray-500">No hay productos en el carrito</p>
+  </div>
+  }
+</div>

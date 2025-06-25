@@ -1,0 +1,230 @@
+<div class="p-6 border-b border-gray-200">
+  <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+    <svg
+      class="w-6 h-6 mr-2 text-blue-600"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+      ></path>
+    </svg>
+    Dirección de Envío
+  </h2>
+
+  <!-- Formulario de dirección -->
+  <form [formGroup]="direccionForm" class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Nombre del Contacto *
+        </label>
+        <input
+          type="text"
+          formControlName="nombre_contacto"
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          [class.border-red-300]="
+            nombreContacto?.invalid && nombreContacto?.touched
+          "
+          [class.border-gray-300]="
+            !nombreContacto?.invalid || !nombreContacto?.touched
+          "
+          placeholder="Nombre de quien recibe"
+        />
+        @if (nombreContacto?.invalid && nombreContacto?.touched) {
+        <p class="mt-1 text-sm text-red-600">
+          @if (nombreContacto?.errors?.['required']) { El nombre del contacto es
+          requerido } @if (nombreContacto?.errors?.['minlength']) { El nombre
+          debe tener al menos 2 caracteres }
+        </p>
+        }
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Teléfono de Contacto *
+        </label>
+        <input
+          type="tel"
+          formControlName="telefono_contacto"
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          [class.border-red-300]="
+            telefonoContacto?.invalid && telefonoContacto?.touched
+          "
+          [class.border-gray-300]="
+            !telefonoContacto?.invalid || !telefonoContacto?.touched
+          "
+          placeholder="999999999"
+        />
+        @if (telefonoContacto?.invalid && telefonoContacto?.touched) {
+        <p class="mt-1 text-sm text-red-600">
+          @if (telefonoContacto?.errors?.['required']) { El teléfono de contacto
+          es requerido } @if (telefonoContacto?.errors?.['pattern']) { Ingresa
+          un teléfono válido de 9 dígitos }
+        </p>
+        }
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Dirección Completa *
+      </label>
+      <input
+        type="text"
+        formControlName="direccion"
+        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        [class.border-red-300]="direccion?.invalid && direccion?.touched"
+        [class.border-gray-300]="!direccion?.invalid || !direccion?.touched"
+        placeholder="Av. Principal 123, Urbanización"
+      />
+      @if (direccion?.invalid && direccion?.touched) {
+      <p class="mt-1 text-sm text-red-600">
+        @if (direccion?.errors?.['required']) { La dirección es requerida } @if
+        (direccion?.errors?.['minlength']) { La dirección debe tener al menos 10
+        caracteres }
+      </p>
+      }
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Referencia
+      </label>
+      <input
+        type="text"
+        formControlName="referencia"
+        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        placeholder="Cerca de... / Frente a..."
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Departamento *
+        </label>
+        <select
+          formControlName="departamento"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        >
+          <option value="Lima">Lima</option>
+          <option value="Arequipa">Arequipa</option>
+          <option value="Trujillo">Trujillo</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Provincia *
+        </label>
+        <select
+          formControlName="provincia"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        >
+          <option value="Lima">Lima</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Distrito *
+        </label>
+        <select
+          formControlName="distrito"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        >
+          <option value="Miraflores">Miraflores</option>
+          <option value="San Isidro">San Isidro</option>
+          <option value="La Molina">La Molina</option>
+        </select>
+      </div>
+    </div>
+  </form>
+
+  <!-- Métodos de Envío -->
+  <div class="mt-6">
+    <h3 class="text-lg font-medium text-gray-900 mb-3">Método de Envío</h3>
+    <div class="space-y-3">
+      @for (metodo of metodosEnvio; track metodo.id) {
+      <label
+        class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+        [class.border-blue-500]="metodoEnvio()?.id === metodo.id"
+        [class.bg-blue-50]="metodoEnvio()?.id === metodo.id"
+      >
+        <input
+          type="radio"
+          name="metodoEnvio"
+          [value]="metodo.id"
+          (change)="seleccionarMetodoEnvio(metodo.id)"
+          [checked]="metodoEnvio()?.id === metodo.id"
+          class="text-blue-600 focus:ring-blue-500"
+        />
+        <div class="ml-3 flex-1">
+          <div class="flex justify-between">
+            <span class="font-medium">{{ metodo.nombre }}</span>
+            <span class="font-bold text-green-600"
+              >S/ {{ metodo.precio }}.00</span
+            >
+          </div>
+          <p class="text-sm text-gray-600">
+            {{ metodo.descripcion }}
+          </p>
+        </div>
+      </label>
+      }
+    </div>
+  </div>
+
+  <!-- Botones de navegación -->
+  <div class="mt-6 flex justify-between">
+    <button
+      (click)="onAnterior()"
+      class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center"
+    >
+      <svg
+        class="w-4 h-4 mr-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"
+        ></path>
+      </svg>
+      Anterior
+    </button>
+
+    <button
+      (click)="onSiguiente()"
+      [disabled]="!formularioValido() || cargando()"
+      class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      @if (cargando()) {
+      <div
+        class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"
+      ></div>
+      } Continuar
+      <svg
+        class="w-4 h-4 ml-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5l7 7-7 7"
+        ></path>
+      </svg>
+    </button>
+  </div>
+</div>

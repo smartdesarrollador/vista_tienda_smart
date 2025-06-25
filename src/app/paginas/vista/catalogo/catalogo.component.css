@@ -1,0 +1,229 @@
+/* Estilos específicos para el Catálogo */
+
+/* Truncar texto en múltiples líneas */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Animaciones suaves para transiciones */
+.transition-all {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto hover para productos */
+.product-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Badges animados */
+.badge-animate {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para el estado de carga */
+.skeleton {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Gradiente para badges de oferta */
+.gradient-sale {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Sombras personalizadas */
+.shadow-product {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.shadow-product-hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Botones con efectos especiales */
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary-gradient:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-1px);
+}
+
+/* Efectos para los filtros */
+.filter-transition {
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Personalización del scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Estados responsive para productos */
+@media (max-width: 640px) {
+  .product-card-mobile {
+    padding: 0.75rem;
+  }
+
+  .product-image-mobile {
+    height: 200px;
+  }
+}
+
+/* Animación para aparición de productos */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Overlay para acciones rápidas */
+.quick-actions-overlay {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+}
+
+/* Efectos para estrellas de rating */
+.star-animation {
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.star-animation:hover {
+  transform: scale(1.1);
+}
+
+/* Separadores estilizados */
+.divider-gradient {
+  background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+}
+
+/* Toast/Notificaciones */
+.toast {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Grid adaptativo mejorado */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* Efectos de precio */
+.price-highlight {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Estados de interacción mejorados */
+.interactive-element {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive-element:hover {
+  transform: scale(1.02);
+}
+
+.interactive-element:active {
+  transform: scale(0.98);
+}
+
+/* Backdrop blur para modales */
+.backdrop-blur-custom {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Loading states mejorados */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

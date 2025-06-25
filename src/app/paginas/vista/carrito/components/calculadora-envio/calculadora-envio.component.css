@@ -1,0 +1,377 @@
+/* Estilos para CalculadoraEnvioComponent */
+
+/* Contenedor principal */
+.calculadora-container {
+  transition: all 0.3s ease;
+}
+
+/* Opciones de envío */
+.shipping-option {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.shipping-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+}
+
+.shipping-option::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.1),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.shipping-option:hover::before {
+  left: 100%;
+}
+
+/* Estados seleccionados */
+.shipping-option.selected {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+  box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.25);
+}
+
+.shipping-option.selected::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+}
+
+/* Formulario de dirección */
+.address-form {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.address-form:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Selects cascada */
+.cascade-select {
+  position: relative;
+}
+
+.cascade-select select {
+  transition: all 0.3s ease;
+}
+
+.cascade-select select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transform: translateY(-1px);
+}
+
+.cascade-select select:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Radio buttons mejorados */
+.radio-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.radio-option {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.radio-option input[type="radio"] {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #d1d5db;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.radio-option input[type="radio"]:checked {
+  border-color: #3b82f6;
+  background-color: #3b82f6;
+}
+
+.radio-option input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: white;
+  transform: translate(-50%, -50%);
+}
+
+/* Direcciones guardadas */
+.saved-address {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.saved-address:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+}
+
+.saved-address.selected {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.saved-address .address-badge {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Botón calcular mejorado */
+.calculate-button {
+  background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.calculate-button:hover:not(:disabled) {
+  background: linear-gradient(45deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(59, 130, 246, 0.4);
+}
+
+.calculate-button:disabled {
+  background: #d1d5db;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Animación de carga */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estados de error */
+.error-container {
+  animation: slideInDown 0.4s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Badges y etiquetas */
+.shipping-badge {
+  transition: all 0.2s ease;
+}
+
+.shipping-badge:hover {
+  transform: scale(1.05);
+}
+
+.default-badge {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Resumen seleccionado */
+.shipping-summary {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border: 1px solid #10b981;
+  animation: slideInUp 0.4s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efectos de focus para accesibilidad */
+.focus-visible:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+/* Animaciones de precio */
+.price-highlight {
+  font-weight: 700;
+  color: #059669;
+  animation: priceGlow 2s ease-in-out infinite;
+}
+
+@keyframes priceGlow {
+  0%,
+  100% {
+    text-shadow: 0 0 5px rgba(5, 150, 105, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(5, 150, 105, 0.5);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .shipping-option {
+    padding: 1rem;
+  }
+
+  .address-form {
+    padding: 1rem;
+  }
+
+  .radio-group {
+    gap: 0.75rem;
+  }
+
+  .saved-address:hover {
+    transform: none;
+  }
+}
+
+/* Grid de campos mejorado */
+.fields-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .fields-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tooltips para información adicional */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+}
+
+/* Progreso de cálculo */
+.calculation-progress {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Estados de validación */
+.field-valid {
+  border-color: #10b981;
+}
+
+.field-invalid {
+  border-color: #ef4444;
+}
+
+.field-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Transiciones suaves para cambios de estado */
+.state-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

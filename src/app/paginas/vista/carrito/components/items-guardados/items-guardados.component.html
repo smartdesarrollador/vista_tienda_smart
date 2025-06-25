@@ -1,0 +1,476 @@
+<!-- Items Guardados / Lista de Deseos -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+  <!-- Header -->
+  <div
+    class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4"
+  >
+    <div>
+      <h3 class="text-lg font-semibold text-gray-900">
+        @if (compacto()) { Lista de Deseos } @else { Mi Lista de Deseos }
+      </h3>
+      @if (!compacto() && estadisticas().total > 0) {
+      <div class="mt-1 flex flex-wrap gap-4 text-sm text-gray-600">
+        <span>{{ estadisticas().total }} productos</span>
+        <span>{{ formatearPrecio(estadisticas().valor_total) }} total</span>
+        @if (estadisticas().cambios_precio > 0) {
+        <span class="text-blue-600"
+          >{{ estadisticas().cambios_precio }} con cambios de precio</span
+        >
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Controles de vista -->
+    @if (!compacto() && estadisticas().total > 0) {
+    <div class="flex flex-col sm:flex-row gap-2">
+      <!-- Filtro por categoría -->
+      <select
+        [value]="categoriaFiltro()"
+        (change)="cambiarFiltroCategoria($any($event.target).value)"
+        class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <option value="">Todas las categorías</option>
+        @for (categoria of categoriesDisponibles(); track categoria) {
+        <option [value]="categoria">{{ categoria }}</option>
+        }
+      </select>
+
+      <!-- Ordenamiento -->
+      <select
+        [value]="ordenamiento()"
+        (change)="cambiarOrdenamiento($any($event.target).value)"
+        class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <option value="fecha">Más recientes</option>
+        <option value="precio">Precio menor</option>
+        <option value="nombre">Nombre A-Z</option>
+        <option value="disponibilidad">Disponibilidad</option>
+      </select>
+    </div>
+    }
+  </div>
+
+  <!-- Estado de carga -->
+  @if (cargando()) {
+  <div class="flex justify-center items-center py-12">
+    <div
+      class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+    ></div>
+    <span class="ml-3 text-gray-600">Cargando lista de deseos...</span>
+  </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+    <div class="flex">
+      <svg
+        class="flex-shrink-0 h-5 w-5 text-red-400"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <div class="ml-3">
+        <p class="text-sm text-red-800">{{ error() }}</p>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Lista vacía -->
+  @if (estaVacio() && !cargando()) {
+  <div class="text-center py-12">
+    <svg
+      class="mx-auto h-12 w-12 text-gray-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+      />
+    </svg>
+    <h3 class="mt-4 text-lg font-medium text-gray-900">
+      Tu lista de deseos está vacía
+    </h3>
+    <p class="mt-2 text-gray-600">
+      @if (!esUsuarioLogueado()) { Inicia sesión para guardar productos en tu
+      lista de deseos } @else { Explora nuestro catálogo y guarda los productos
+      que te interesen }
+    </p>
+    @if (esUsuarioLogueado()) {
+    <div class="mt-6">
+      <a
+        href="/catalogo"
+        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+      >
+        Explorar productos
+      </a>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Alertas de cambios -->
+  @if (!compacto() && (itemsConCambioPrecio().length > 0 ||
+  itemsSinStock().length > 0)) {
+  <div class="space-y-3 mb-6">
+    <!-- Cambios de precio -->
+    @if (itemsConCambioPrecio().length > 0) {
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div class="flex items-center">
+        <svg
+          class="w-5 h-5 text-blue-600 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <span class="text-sm font-medium text-blue-800">
+          {{ itemsConCambioPrecio().length }} productos han cambiado de precio
+        </span>
+      </div>
+    </div>
+    }
+
+    <!-- Items sin stock -->
+    @if (itemsSinStock().length > 0) {
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <svg
+            class="w-5 h-5 text-yellow-600 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.268 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
+          </svg>
+          <span class="text-sm font-medium text-yellow-800">
+            {{ itemsSinStock().length }} productos sin stock
+          </span>
+        </div>
+        <button
+          (click)="limpiarItemsSinStock()"
+          class="text-sm text-yellow-700 hover:text-yellow-900 font-medium underline"
+        >
+          Limpiar
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Grid de productos -->
+  @if (itemsVisibles().length > 0 && !cargando()) {
+  <div
+    [class]="
+      compacto()
+        ? 'space-y-3'
+        : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+    "
+  >
+    @for (item of itemsVisibles(); track item.id) {
+    <div
+      [class]="
+        'wishlist-item bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md ' +
+        (!item.disponible ? 'opacity-75' : '') +
+        (compacto() ? ' flex p-3' : '')
+      "
+    >
+      <!-- Imagen del producto -->
+      <div [class]="compacto() ? 'flex-shrink-0 mr-3' : 'relative'">
+        <div class="relative">
+          <img
+            [src]="construirUrlImagen(item.imagen)"
+            [alt]="item.nombre"
+            [class]="
+              compacto()
+                ? 'w-16 h-16 object-cover rounded-lg'
+                : 'w-full h-48 object-cover'
+            "
+            loading="lazy"
+            (click)="verProducto(item.slug)"
+            class="cursor-pointer hover:opacity-90 transition-opacity"
+            (error)="onImagenError($event)"
+          />
+
+          <!-- Badge de descuento -->
+          @if (item.precio_oferta) {
+          <div
+            class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
+          >
+            -{{ calcularDescuento(item.precio, item.precio_oferta) }}%
+          </div>
+          }
+
+          <!-- Badge de cambio de precio -->
+          @if (tuvoCambioPrecio(item)) {
+          <div
+            [class]="
+              'absolute top-2 right-2 text-white text-xs font-bold px-2 py-1 rounded-full ' +
+              (tuvoCambioPrecio(item) === 'descuento'
+                ? 'bg-green-500'
+                : 'bg-orange-500')
+            "
+          >
+            @if (tuvoCambioPrecio(item) === 'descuento') { ↓{{
+              formatearPrecio(obtenerDiferenciaPrecio(item))
+            }}
+            } @else { ↑{{ formatearPrecio(obtenerDiferenciaPrecio(item)) }}
+            }
+          </div>
+          }
+
+          <!-- Estado sin stock -->
+          @if (!item.disponible) {
+          <div
+            class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+          >
+            <span class="text-white text-sm font-medium">Sin stock</span>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Información del producto -->
+      <div [class]="compacto() ? 'flex-1 min-w-0' : 'p-4'">
+        <!-- Marca y categoría -->
+        @if (!compacto() && item.marca) {
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-500 uppercase tracking-wide">{{
+            item.marca
+          }}</span>
+          <span class="text-xs text-gray-500">{{ item.categoria }}</span>
+        </div>
+        }
+
+        <!-- Nombre del producto -->
+        <h4
+          [class]="
+            (compacto() ? 'text-sm' : 'text-base') +
+            ' font-medium text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors'
+          "
+          (click)="verProducto(item.slug)"
+        >
+          {{ item.nombre }}
+        </h4>
+
+        <!-- Variaciones -->
+        @if (item.variacion && !compacto()) {
+        <div class="flex flex-wrap gap-2 mb-2">
+          @if (item.variacion.color) {
+          <div class="flex items-center gap-1">
+            <div
+              class="w-3 h-3 rounded-full border border-gray-300"
+              [style.backgroundColor]="item.variacion.color.hex"
+            ></div>
+            <span class="text-xs text-gray-600">{{
+              item.variacion.color.nombre
+            }}</span>
+          </div>
+          } @if (item.variacion.talla) {
+          <span class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
+            Talla {{ item.variacion.talla }}
+          </span>
+          }
+        </div>
+        }
+
+        <!-- Precio -->
+        <div class="mb-3">
+          @if (item.precio_oferta) {
+          <div class="flex items-center gap-2">
+            <span
+              [class]="
+                (compacto() ? 'text-base' : 'text-lg') +
+                ' font-bold text-green-600'
+              "
+            >
+              {{ formatearPrecio(item.precio_oferta) }}
+            </span>
+            <span class="text-sm text-gray-500 line-through">
+              {{ formatearPrecio(item.precio) }}
+            </span>
+          </div>
+          } @else {
+          <span
+            [class]="
+              (compacto() ? 'text-base' : 'text-lg') +
+              ' font-bold text-gray-900'
+            "
+          >
+            {{ formatearPrecio(item.precio) }}
+          </span>
+          }
+        </div>
+
+        <!-- Calificación y tiempo guardado -->
+        @if (!compacto()) {
+        <div
+          class="flex items-center justify-between mb-3 text-xs text-gray-500"
+        >
+          <div class="flex items-center gap-1">
+            @for (estrella of obtenerEstrellas(item.calificacion); track $index)
+            {
+            <svg
+              [class]="
+                'w-3 h-3 ' +
+                (estrella === 'full'
+                  ? 'text-yellow-400'
+                  : estrella === 'half'
+                  ? 'text-yellow-400'
+                  : 'text-gray-300')
+              "
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+              />
+            </svg>
+            }
+            <span class="ml-1">{{ item.calificacion }}</span>
+          </div>
+          <span>{{ formatearTiempoGuardado(item.guardado_en) }}</span>
+        </div>
+        }
+
+        <!-- Acciones -->
+        @if (mostrarAcciones()) {
+        <div [class]="compacto() ? 'flex gap-2' : 'flex flex-col gap-2'">
+          <!-- Botón mover al carrito -->
+          <button
+            (click)="moverAlCarrito(item)"
+            [disabled]="!item.disponible || estaEnCarrito(item)"
+            [class]="
+              'flex items-center justify-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ' +
+              (!item.disponible || estaEnCarrito(item)
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700') +
+              (compacto() ? ' flex-1' : ' w-full')
+            "
+          >
+            @if (estaEnCarrito(item)) {
+            <svg
+              class="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            En carrito } @else if (!item.disponible) { Sin stock } @else {
+            <svg
+              class="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 2.5M7 13h10M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"
+              />
+            </svg>
+            @if (compacto()) { Carrito } @else { Mover al carrito } }
+          </button>
+
+          <!-- Botón eliminar -->
+          <button
+            (click)="eliminarItem(item)"
+            [class]="
+              'flex items-center justify-center px-3 py-2 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors ' +
+              (compacto() ? '' : 'w-full border border-red-200')
+            "
+          >
+            <svg
+              class="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+            Eliminar
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Botón ver más -->
+  @if (hayMasParaMostrar()) {
+  <div class="mt-6 text-center">
+    <button
+      (click)="toggleMostrarTodos()"
+      class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+    >
+      Ver {{ itemsGuardados().length - maxItemsVisibles() }} productos más
+      <svg
+        class="ml-2 w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    </button>
+  </div>
+  } }
+
+  <!-- Mensaje para usuario no logueado -->
+  @if (!esUsuarioLogueado()) {
+  <div class="text-center py-8 border-t border-gray-200">
+    <p class="text-gray-600 mb-4">
+      Inicia sesión para ver tu lista de deseos y sincronizar tus productos
+      guardados
+    </p>
+    <a
+      href="/auth/login"
+      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+    >
+      Iniciar sesión
+    </a>
+  </div>
+  }
+</div>

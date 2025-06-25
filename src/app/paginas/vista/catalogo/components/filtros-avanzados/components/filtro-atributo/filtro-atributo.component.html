@@ -1,0 +1,444 @@
+<!-- Filtro de Atributos -->
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+  <!-- Header del Filtro -->
+  <div class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+        <svg
+          class="w-5 h-5 mr-2 text-purple-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+          />
+        </svg>
+        Atributos
+      </h3>
+
+      <!-- Opciones del Header -->
+      <div class="flex items-center space-x-2">
+        <!-- Toggle Solo con Productos -->
+        <button
+          type="button"
+          class="p-1.5 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+          (click)="toggleMostrarSoloConProductos()"
+          [title]="
+            mostrarSoloConProductos()
+              ? 'Mostrar todos los atributos'
+              : 'Mostrar solo con productos'
+          "
+        >
+          <svg
+            class="w-4 h-4"
+            [class.text-purple-600]="mostrarSoloConProductos()"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V4z"
+            />
+          </svg>
+        </button>
+
+        <!-- Expandir/Colapsar -->
+        <div class="hidden sm:flex items-center space-x-1">
+          <button
+            type="button"
+            class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 transition-colors duration-200"
+            (click)="expandirTodos()"
+            title="Expandir todos"
+          >
+            Expandir
+          </button>
+          <span class="text-gray-300">|</span>
+          <button
+            type="button"
+            class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 transition-colors duration-200"
+            (click)="colapsarTodos()"
+            title="Colapsar todos"
+          >
+            Colapsar
+          </button>
+        </div>
+
+        <!-- Limpiar Todos -->
+        @if (tieneAtributosSeleccionados()) {
+        <button
+          type="button"
+          class="px-2 py-1 text-xs text-red-600 hover:text-red-700 font-medium transition-colors duration-200"
+          (click)="limpiarTodosLosAtributos()"
+        >
+          Limpiar
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Contador de Selecciones -->
+    @if (tieneAtributosSeleccionados()) {
+    <div class="mt-2 flex items-center text-sm text-purple-600">
+      <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      {{ contadorAtributosSeleccionados() }} valor(es) seleccionado(s)
+    </div>
+    }
+  </div>
+
+  <!-- Contenido del Filtro -->
+  <div class="p-4">
+    <!-- Estado de Carga -->
+    @if (loading()) {
+    <div class="space-y-4">
+      @for (item of [1,2,3]; track item) {
+      <div class="animate-pulse">
+        <div class="h-4 bg-gray-200 rounded w-1/3 mb-3"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="h-8 bg-gray-200 rounded"></div>
+          <div class="h-8 bg-gray-200 rounded"></div>
+          <div class="h-8 bg-gray-200 rounded"></div>
+          <div class="h-8 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Lista de Atributos -->
+    @else if (atributosFiltrados().length > 0) {
+    <div class="space-y-4">
+      @for (atributo of atributosFiltrados(); track atributo.id) {
+      <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <!-- Header del Atributo -->
+        <div
+          class="p-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+          (click)="toggleExpansion(atributo.id)"
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <button
+                type="button"
+                class="flex items-center justify-center w-5 h-5 mr-3 text-gray-400 hover:text-gray-600"
+              >
+                <svg
+                  class="w-4 h-4 transition-transform duration-200"
+                  [class.rotate-90]="isExpanded(atributo.id)"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              <h4 class="text-sm font-medium text-gray-900">
+                {{ atributo.nombre }}
+              </h4>
+
+              <!-- Badge del tipo de atributo -->
+              <span
+                class="ml-2 px-2 py-0.5 text-xs font-medium rounded-full"
+                [class.bg-blue-100]="atributo.tipo === 'color'"
+                [class.text-blue-800]="atributo.tipo === 'color'"
+                [class.bg-green-100]="atributo.tipo === 'texto'"
+                [class.text-green-800]="atributo.tipo === 'texto'"
+                [class.bg-yellow-100]="atributo.tipo === 'numero'"
+                [class.text-yellow-800]="atributo.tipo === 'numero'"
+                [class.bg-gray-100]="atributo.tipo === 'booleano'"
+                [class.text-gray-800]="atributo.tipo === 'booleano'"
+              >
+                {{ atributo.tipo }}
+              </span>
+            </div>
+
+            <!-- Contador y acciones -->
+            <div class="flex items-center space-x-2">
+              @if (tieneValoresSeleccionados(atributo.id)) {
+              <span
+                class="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs font-medium rounded-full"
+              >
+                {{ getContadorSeleccionados(atributo.id) }}
+              </span>
+              }
+
+              <span class="text-xs text-gray-500">
+                {{ atributo.valores.length }} opciones
+              </span>
+
+              @if (tieneValoresSeleccionados(atributo.id)) {
+              <button
+                type="button"
+                class="p-1 text-red-400 hover:text-red-600 transition-colors duration-200"
+                (click)="limpiarAtributo(atributo.id); $event.stopPropagation()"
+                title="Limpiar atributo"
+              >
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenido del Atributo -->
+        @if (isExpanded(atributo.id)) {
+        <div class="p-4 border-t border-gray-100">
+          <!-- Barra de búsqueda -->
+          @if (atributo.valores.length > 6) {
+          <div class="mb-4">
+            <div class="relative">
+              <svg
+                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                [placeholder]="'Buscar en ' + atributo.nombre + '...'"
+                (input)="onBusquedaChange(atributo.id, $event)"
+              />
+            </div>
+          </div>
+          }
+
+          <!-- Acciones rápidas -->
+          <div class="flex items-center justify-between mb-3">
+            <button
+              type="button"
+              class="text-xs text-purple-600 hover:text-purple-800 font-medium transition-colors duration-200"
+              (click)="seleccionarTodosLosValores(atributo)"
+              [disabled]="disabled()"
+            >
+              Seleccionar todos
+            </button>
+
+            @if (atributo.valores.length > 10) {
+            <span class="text-xs text-gray-500">
+              {{ atributo.valores.length }} valores
+            </span>
+            }
+          </div>
+
+          <!-- Valores del Atributo -->
+          <div
+            class="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+            [class.grid]="atributo.tipo !== 'color'"
+            [class.grid-cols-1]="
+              atributo.tipo !== 'color' && atributo.valores.length <= 5
+            "
+            [class.grid-cols-2]="
+              atributo.tipo !== 'color' && atributo.valores.length > 5
+            "
+            [class.gap-2]="atributo.tipo !== 'color'"
+            [class.flex]="atributo.tipo === 'color'"
+            [class.flex-wrap]="atributo.tipo === 'color'"
+            [class.gap-3]="atributo.tipo === 'color'"
+          >
+            @for (valor of atributo.valores; track valor.id) {
+
+            <!-- Valor tipo Color -->
+            @if (atributo.tipo === 'color') {
+            <button
+              type="button"
+              class="relative group"
+              (click)="toggleValorAtributo(atributo.id, valor.id)"
+              [disabled]="disabled()"
+              [title]="
+                valor.valor + ' (' + valor.productos_count + ' productos)'
+              "
+            >
+              <div
+                class="w-8 h-8 rounded-full border-2 transition-all duration-200"
+                [class.border-purple-500]="
+                  isValorSeleccionado(atributo.id, valor.id)
+                "
+                [class.border-gray-300]="
+                  !isValorSeleccionado(atributo.id, valor.id)
+                "
+                [class.scale-110]="isValorSeleccionado(atributo.id, valor.id)"
+                [style]="getColorStyle(valor)"
+              >
+                @if (isValorSeleccionado(atributo.id, valor.id)) {
+                <svg
+                  class="w-3 h-3 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  [class.text-white]="!isColorClaro(valor.color_hex!)"
+                  [class.text-gray-900]="isColorClaro(valor.color_hex!)"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                }
+              </div>
+              <!-- Tooltip -->
+              <div
+                class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10"
+              >
+                {{ valor.valor }}
+                <br />
+                <span class="text-gray-300"
+                  >{{ valor.productos_count }} productos</span
+                >
+              </div>
+            </button>
+            }
+
+            <!-- Valor tipo Texto/Número/Booleano -->
+            @else {
+            <label
+              class="flex items-center justify-between p-2 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+              [class.border-purple-300]="
+                isValorSeleccionado(atributo.id, valor.id)
+              "
+              [class.bg-purple-50]="isValorSeleccionado(atributo.id, valor.id)"
+            >
+              <div class="flex items-center min-w-0">
+                <input
+                  type="checkbox"
+                  [checked]="isValorSeleccionado(atributo.id, valor.id)"
+                  (change)="toggleValorAtributo(atributo.id, valor.id)"
+                  [disabled]="disabled()"
+                  class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 mr-3 flex-shrink-0"
+                />
+                <span
+                  class="text-sm text-gray-900 truncate"
+                  [class.font-medium]="
+                    isValorSeleccionado(atributo.id, valor.id)
+                  "
+                >
+                  {{ valor.valor }}
+                </span>
+              </div>
+
+              <span
+                class="ml-2 px-2 py-0.5 text-xs font-medium rounded-full flex-shrink-0"
+                [class.bg-purple-100]="
+                  isValorSeleccionado(atributo.id, valor.id)
+                "
+                [class.text-purple-800]="
+                  isValorSeleccionado(atributo.id, valor.id)
+                "
+                [class.bg-gray-100]="
+                  !isValorSeleccionado(atributo.id, valor.id)
+                "
+                [class.text-gray-600]="
+                  !isValorSeleccionado(atributo.id, valor.id)
+                "
+              >
+                {{ valor.productos_count }}
+              </span>
+            </label>
+            } }
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Estado Vacío -->
+    @else {
+    <div class="text-center py-8">
+      <svg
+        class="w-12 h-12 text-gray-300 mx-auto mb-3"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+        />
+      </svg>
+      <h4 class="text-sm font-medium text-gray-900 mb-1">
+        No hay atributos disponibles
+      </h4>
+      <p class="text-sm text-gray-500">
+        No se encontraron atributos para filtrar.
+      </p>
+    </div>
+    }
+  </div>
+
+  <!-- Footer del Filtro (Solo en móvil) -->
+  <div
+    class="block sm:hidden px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-lg"
+  >
+    <div class="flex items-center justify-between">
+      <button
+        type="button"
+        class="flex items-center text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+        (click)="expandirTodos()"
+      >
+        <svg
+          class="w-4 h-4 mr-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+        Expandir todo
+      </button>
+
+      <button
+        type="button"
+        class="flex items-center text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+        (click)="colapsarTodos()"
+      >
+        <svg
+          class="w-4 h-4 mr-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 12H4"
+          />
+        </svg>
+        Colapsar todo
+      </button>
+    </div>
+  </div>
+</div>

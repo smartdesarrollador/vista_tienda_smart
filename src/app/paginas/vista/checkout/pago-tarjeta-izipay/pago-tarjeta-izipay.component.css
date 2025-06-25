@@ -1,0 +1,190 @@
+/* Estilos específicos para el pago con Izipay */
+.payment-container {
+  position: relative;
+}
+
+.payment-form {
+  background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+}
+
+/* Contenedor de Izipay */
+#micuentawebstd_rest_wrapper {
+  min-height: 400px;
+  position: relative;
+}
+
+.kr-embedded {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Estilos para loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estilos para error */
+.error-container {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.error-icon {
+  color: #dc2626;
+}
+
+.error-title {
+  color: #991b1b;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.error-message {
+  color: #b91c1c;
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  background: #dc2626;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-button:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+/* Información de seguridad */
+.security-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f0f9ff;
+  border-radius: 8px;
+}
+
+.security-badge {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #0369a1;
+}
+
+.security-icon {
+  color: #059669;
+  margin-right: 0.25rem;
+}
+
+/* Botones de navegación */
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #059669, #047857);
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857, #065f46);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .payment-form {
+    padding: 1rem;
+  }
+
+  .navigation-buttons {
+    flex-direction: column;
+  }
+
+  .security-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Personalización de estilos de Izipay */
+.kr-embedded iframe {
+  border-radius: 8px;
+}
+
+/* Animaciones */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

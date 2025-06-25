@@ -1,0 +1,231 @@
+/* Estilos específicos para el componente testimonio-card */
+
+/* Card principal con efectos de hover */
+.testimonio-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f3f4f6;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.testimonio-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-color: #e5e7eb;
+  transform: translateY(-4px);
+}
+
+/* Avatar del usuario */
+.avatar-usuario {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+  transition: transform 0.2s ease;
+}
+
+.avatar-usuario:hover {
+  transform: scale(1.05);
+}
+
+.avatar-iniciales {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #60a5fa, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+/* Badge de verificado */
+.badge-verificado {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  background: #3b82f6;
+  border-radius: 50%;
+  padding: 0.25rem;
+}
+
+.badge-verificado-inline {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* Texto de testimonio */
+.texto-testimonio {
+  color: #374151;
+  line-height: 1.625;
+  transition: all 0.3s ease;
+}
+
+/* Botón expandir */
+.boton-expandir {
+  margin-top: 0.5rem;
+  color: #2563eb;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  outline: none;
+  border-radius: 0.25rem;
+}
+
+.boton-expandir:hover {
+  color: #1d4ed8;
+}
+
+.boton-expandir:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+}
+
+/* Badge recomendado */
+.badge-recomendado {
+  display: flex;
+  align-items: center;
+  color: #059669;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Respuesta del administrador */
+.respuesta-admin {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #eff6ff;
+  border-radius: 0.5rem;
+  border-left: 4px solid #60a5fa;
+}
+
+.respuesta-admin-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.respuesta-admin-titulo {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1e3a8a;
+  margin-bottom: 0.25rem;
+}
+
+.respuesta-admin-texto {
+  font-size: 0.875rem;
+  color: #1e40af;
+}
+
+/* Truncamiento de texto */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.line-clamp-none {
+  overflow: visible;
+  display: block;
+}
+
+/* Animaciones suaves */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.testimonio-card {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .testimonio-card {
+    padding: 1rem;
+  }
+
+  .avatar-usuario,
+  .avatar-iniciales {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .avatar-iniciales {
+    font-size: 1rem;
+  }
+
+  .badge-verificado-inline {
+    font-size: 0.7rem;
+    padding: 0.125rem 0.375rem;
+  }
+}
+
+/* Estados de interacción */
+.testimonio-card:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Mejoras de accesibilidad */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Dark mode ready (para futuro) */
+@media (prefers-color-scheme: dark) {
+  .testimonio-card {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  .texto-testimonio {
+    color: #d1d5db;
+  }
+
+  .respuesta-admin {
+    background: #1e3a8a;
+  }
+
+  .respuesta-admin-titulo {
+    color: #93c5fd;
+  }
+
+  .respuesta-admin-texto {
+    color: #bfdbfe;
+  }
+}

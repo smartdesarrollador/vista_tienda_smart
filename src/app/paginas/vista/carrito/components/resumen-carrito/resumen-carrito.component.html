@@ -1,0 +1,410 @@
+<!-- Resumen del carrito -->
+<div [class]="sticky() ? 'lg:sticky lg:top-8' : ''">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <!-- Header del resumen -->
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-lg font-semibold text-gray-900">
+        @if (compacto()) { Resumen } @else { Resumen del pedido }
+      </h3>
+
+      <!-- Indicador de items -->
+      @if (!compacto()) {
+      <span class="text-sm text-gray-500">
+        {{ totalItems() }} {{ totalItems() === 1 ? "producto" : "productos" }}
+      </span>
+      }
+    </div>
+
+    <!-- Progreso hacia envío gratis -->
+    @if (!aplicaEnvioGratis() && faltaParaEnvioGratis() > 0) {
+    <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-blue-900">
+          ¡Envío gratis disponible!
+        </span>
+        <svg
+          class="w-5 h-5 text-blue-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+          />
+        </svg>
+      </div>
+      <p class="text-sm text-blue-700 mb-3">
+        Agrega {{ formatearPrecio(faltaParaEnvioGratis()) }} más para obtener
+        envío gratuito
+      </p>
+      <div class="w-full bg-blue-200 rounded-full h-2">
+        <div
+          class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+          [style.width.%]="(resumen().subtotal / 150) * 100"
+        ></div>
+      </div>
+    </div>
+    }
+
+    <!-- Detalles del resumen -->
+    <div class="space-y-3 mb-6">
+      <!-- Subtotal -->
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-600">Subtotal</span>
+        <span class="font-medium text-gray-900">{{
+          resumenFormateado().subtotal_formatted
+        }}</span>
+      </div>
+
+      <!-- Descuentos aplicados -->
+      @if (resumen().descuentos > 0) {
+      <div class="space-y-2">
+        @for (descuento of resumen().descuentos_aplicados; track descuento.tipo)
+        {
+        <div class="flex justify-between text-sm">
+          <div class="flex items-center">
+            <svg
+              class="w-4 h-4 text-green-600 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+              />
+            </svg>
+            <span class="text-green-700 truncate">{{
+              descuento.descripcion
+            }}</span>
+          </div>
+          <span class="font-medium text-green-600"
+            >-{{ formatearPrecio(descuento.monto) }}</span
+          >
+        </div>
+        }
+
+        <!-- Total de descuentos -->
+        <div
+          class="flex justify-between text-sm pt-2 border-t border-green-100"
+        >
+          <span class="text-green-700 font-medium">Total ahorrado</span>
+          <span class="font-bold text-green-600"
+            >-{{ resumenFormateado().descuentos_formatted }}</span
+          >
+        </div>
+      </div>
+      }
+
+      <!-- Impuestos -->
+      @if (resumen().impuestos > 0) {
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-600">IGV (18%)</span>
+        <span class="font-medium text-gray-900">{{
+          resumenFormateado().impuestos_formatted
+        }}</span>
+      </div>
+      }
+
+      <!-- Envío -->
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-600">Envío</span>
+        <div class="text-right">
+          @if (aplicaEnvioGratis()) {
+          <span class="font-medium text-green-600">¡Gratis!</span>
+          <div class="text-xs text-gray-500">{{ obtenerTiempoEntrega() }}</div>
+          } @else if (resumen().costo_envio > 0) {
+          <span class="font-medium text-gray-900">{{
+            resumenFormateado().costo_envio_formatted
+          }}</span>
+          <div class="text-xs text-gray-500">{{ obtenerTiempoEntrega() }}</div>
+          } @else {
+          <span class="font-medium text-gray-500">Calculado en checkout</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Total final -->
+    <div class="border-t border-gray-200 pt-4 mb-6">
+      <div class="flex justify-between items-center">
+        <span class="text-lg font-semibold text-gray-900">Total</span>
+        <div class="text-right">
+          <span class="text-xl font-bold text-gray-900">{{
+            resumenFormateado().total_formatted
+          }}</span>
+          @if (ahorroTotal() > 0) {
+          <div class="text-sm text-green-600">
+            Ahorras {{ formatearPrecio(ahorroTotal()) }}
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Cupón de descuento -->
+    <div class="mb-6">
+      <!-- Cupón aplicado -->
+      @if (cuponAplicado()) {
+      <div
+        class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg"
+      >
+        <div class="flex items-center">
+          <svg
+            class="w-5 h-5 text-green-600 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <div>
+            <span class="text-sm font-medium text-green-800">{{
+              cuponAplicado()!.codigo
+            }}</span>
+            <div class="text-xs text-green-700">
+              {{ cuponAplicado()!.descripcion }}
+            </div>
+          </div>
+        </div>
+        <button
+          (click)="removerCupon()"
+          class="text-green-600 hover:text-green-800 transition-colors"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+      }
+
+      <!-- Formulario de cupón -->
+      @else {
+      <div>
+        @if (!mostrarFormularioCupon()) {
+        <!-- Botón para mostrar formulario -->
+        <button
+          (click)="toggleFormularioCupon()"
+          class="flex items-center justify-center w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group"
+        >
+          <svg
+            class="w-5 h-5 text-gray-400 group-hover:text-blue-500 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+            />
+          </svg>
+          <span
+            class="text-sm font-medium text-gray-600 group-hover:text-blue-600"
+          >
+            ¿Tienes un código de descuento?
+          </span>
+        </button>
+        } @else {
+        <!-- Formulario de cupón -->
+        <form (ngSubmit)="onSubmitCupon($event)" class="space-y-3">
+          <div class="flex gap-2">
+            <input
+              type="text"
+              [value]="codigoCupon()"
+              (input)="codigoCupon.set($any($event.target).value)"
+              placeholder="Código de cupón"
+              [disabled]="aplicandoCupon()"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            />
+            <button
+              type="submit"
+              [disabled]="!codigoCupon() || aplicandoCupon()"
+              class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            >
+              @if (aplicandoCupon()) {
+              <svg
+                class="w-4 h-4 animate-spin"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              } @else { Aplicar }
+            </button>
+          </div>
+
+          <!-- Error de cupón -->
+          @if (errorCupon()) {
+          <div class="flex items-center text-sm text-red-600">
+            <svg
+              class="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            {{ errorCupon() }}
+          </div>
+          }
+
+          <!-- Cancelar -->
+          <button
+            type="button"
+            (click)="toggleFormularioCupon()"
+            class="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            Cancelar
+          </button>
+        </form>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Botones de acción -->
+    @if (mostrarBotonCheckout()) {
+    <div class="space-y-3">
+      <!-- Botón principal de checkout -->
+      <button
+        (click)="onCheckoutClick()"
+        [disabled]="!puedeIrAlCheckout()"
+        class="checkout-button w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        <div class="flex items-center justify-center">
+          <svg
+            class="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+          @if (esUsuarioLogueado()) { Proceder al pago } @else { Iniciar sesión
+          y pagar }
+        </div>
+      </button>
+
+      <!-- Botón continuar comprando -->
+      @if (mostrarBotonContinuar()) {
+      <button
+        (click)="onContinuarClick()"
+        class="secondary-button w-full bg-white text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors duration-200"
+      >
+        Continuar comprando
+      </button>
+      }
+    </div>
+    }
+
+    <!-- Garantías y seguridad -->
+    @if (!compacto()) {
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <div class="grid grid-cols-2 gap-4 text-xs text-gray-600">
+        <div class="flex items-center">
+          <svg
+            class="w-4 h-4 text-green-500 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m5.25-1.5a2.25 2.25 0 00-4.5 0v-.7a3.7 3.7 0 10-7.4 0v.7a2.25 2.25 0 00-4.5 0v3a2.25 2.25 0 004.5 0V18a3 3 0 106 0v-3a2.25 2.25 0 004.5 0v-3z"
+            />
+          </svg>
+          <span>Compra segura</span>
+        </div>
+        <div class="flex items-center">
+          <svg
+            class="w-4 h-4 text-blue-500 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+            />
+          </svg>
+          <span>Devoluciones fáciles</span>
+        </div>
+        <div class="flex items-center">
+          <svg
+            class="w-4 h-4 text-yellow-500 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
+          </svg>
+          <span>Entrega rápida</span>
+        </div>
+        <div class="flex items-center">
+          <svg
+            class="w-4 h-4 text-purple-500 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+            />
+          </svg>
+          <span>Soporte 24/7</span>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

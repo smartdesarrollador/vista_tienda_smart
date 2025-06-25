@@ -1,0 +1,648 @@
+<!-- Navbar fijo con diseño responsive -->
+<nav
+  class="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 shadow-md z-50 transition-all duration-300"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <!-- Logo y nombre -->
+      <div class="flex items-center">
+        <a routerLink="/" class="flex-shrink-0 flex items-center">
+          <!-- Logo desde la configuración -->
+          <img *ngIf="logoUrl" [src]="logoUrl" alt="Logo" class="h-8 w-auto" />
+          <!-- Icono por defecto si no hay logo -->
+          <svg
+            *ngIf="!logoUrl"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            [style.color]="colorPrimario"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.5a1 1 0 102 0V5zM10 9a1 1 0 100-2 1 1 0 000 2z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span class="ml-2 text-xl font-bold" [style.color]="colorTexto">
+            {{ nombreSitio }}
+          </span>
+        </a>
+      </div>
+
+      <!-- Menú principal - Visible en pantallas medianas y grandes -->
+      <div class="hidden md:ml-6 md:flex md:items-center md:space-x-4">
+        <a
+          routerLink="/"
+          class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+          >Inicio</a
+        >
+        <!--  <a
+          routerLink="/about"
+          class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+          >About</a
+        > -->
+        <a
+          routerLink="/catalogo"
+          class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+          >Catálogo</a
+        >
+
+        <!-- Menú con submenú - Diseño tradicional desplegable -->
+        <div class="relative">
+          <button
+            (click)="toggleDesktopSubmenu($event)"
+            class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center transition-colors duration-200"
+            [style.color]="colorTexto"
+            [style.hover-color]="colorEnlaces"
+            [ngClass]="{ 'bg-gray-100 dark:bg-gray-700': desktopSubmenuOpen }"
+          >
+            Categorías
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="ml-1 h-4 w-4 transition-transform duration-300 ease-in-out"
+              [class.rotate-180]="desktopSubmenuOpen"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          <!-- Submenú desplegable tradicional -->
+          <div
+            class="absolute top-full left-0 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50 transition-all duration-300 ease-in-out origin-top"
+            [ngClass]="{
+              'opacity-100 scale-y-100 translate-y-0': desktopSubmenuOpen,
+              'opacity-0 scale-y-0 -translate-y-2 pointer-events-none':
+                !desktopSubmenuOpen
+            }"
+          >
+            <!-- Estado de carga -->
+            @if (cargandoCategorias()) {
+            <div
+              class="px-4 py-3 border-b border-gray-200 dark:border-gray-600"
+            >
+              <div
+                class="flex items-center text-sm text-gray-500 dark:text-gray-400"
+              >
+                <svg
+                  class="animate-spin -ml-1 mr-2 h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Cargando categorías...
+              </div>
+            </div>
+            }
+
+            <!-- Lista de todas las categorías activas -->
+            @else if (categoriasPrincipales().length > 0) {
+            <div class="py-1">
+              @for (categoria of categoriasPrincipales(); track categoria.id) {
+              <a
+                [routerLink]="'/productos-por-categoria/' + categoria.slug"
+                class="block py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 border-l-3 border-transparent hover:border-blue-500"
+                [ngClass]="{
+                  'px-4': !categoria.categoria_padre_id,
+                  'px-6 pl-8': categoria.categoria_padre_id
+                }"
+                [style.color]="colorTexto"
+                [title]="categoria.descripcion || categoria.nombre"
+                (click)="desktopSubmenuOpen = false"
+              >
+                <div class="flex items-center">
+                  <!-- Icono para categorías principales -->
+                  <svg
+                    *ngIf="!categoria.categoria_padre_id"
+                    class="w-4 h-4 mr-2 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                    />
+                  </svg>
+                  <!-- Icono para subcategorías -->
+                  <svg
+                    *ngIf="categoria.categoria_padre_id"
+                    class="w-3 h-3 mr-2 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                  <span
+                    [ngClass]="{
+                      'font-medium': !categoria.categoria_padre_id,
+                      'text-sm text-gray-600 dark:text-gray-400':
+                        categoria.categoria_padre_id
+                    }"
+                  >
+                    {{ categoria.nombre }}
+                  </span>
+                </div>
+              </a>
+              }
+            </div>
+
+            <!-- Separador -->
+            <div class="border-t border-gray-200 dark:border-gray-600"></div>
+
+            <!-- Ver todas las categorías -->
+            <div class="py-1">
+              <a
+                routerLink="/catalogo"
+                class="block px-4 py-2 text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors duration-200"
+                [style.color]="colorEnlaces"
+                (click)="desktopSubmenuOpen = false"
+              >
+                <div class="flex items-center">
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
+                  </svg>
+                  Ver todas las categorías
+                </div>
+              </a>
+            </div>
+            }
+
+            <!-- Estado vacío -->
+            @else {
+            <div class="px-4 py-6 text-center">
+              <svg
+                class="w-8 h-8 mx-auto mb-2 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
+              </svg>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                No hay categorías disponibles
+              </p>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- <a
+          routerLink="/proyectos"
+          class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+          >Proyectos</a
+        > -->
+        <a
+          routerLink="/contacto"
+          class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+          >Contacto</a
+        >
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="hidden md:flex items-center">
+        <!-- Botón de carrito -->
+        <button
+          routerLink="/carrito"
+          class="relative mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
+          [style.color]="colorTexto"
+          title="Carrito de compras"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"
+            />
+          </svg>
+          <!-- Contador de items en el carrito -->
+          <span
+            *ngIf="totalItemsCarrito() > 0"
+            class="absolute -top-1 -right-1 h-5 w-5 text-xs font-bold text-white rounded-full flex items-center justify-center"
+            [style.background-color]="colorPrimario"
+          >
+            {{ totalItemsCarrito() }}
+          </span>
+        </button>
+
+        <!-- Botón de acceso para usuarios no autenticados -->
+        <button
+          *ngIf="!currentUser"
+          routerLink="/auth/login"
+          class="ml-3 hover:bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300"
+          [style.background-color]="colorPrimario"
+        >
+          Acceder
+        </button>
+
+        <!-- Menú de usuario para usuarios autenticados -->
+        <div *ngIf="currentUser" class="relative ml-3">
+          <button
+            (click)="toggleUserMenu($event)"
+            class="flex items-center text-sm rounded-full focus:outline-none"
+          >
+            <div
+              class="h-8 w-8 rounded-full flex items-center justify-center text-white"
+              [style.background-color]="colorPrimario"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Menú desplegable de usuario -->
+          <div
+            *ngIf="userMenuOpen"
+            class="absolute right-0 mt-2 w-48 py-1 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50"
+          >
+            <!-- Nombre del usuario -->
+            <div
+              class="px-4 py-2 font-medium border-b border-gray-200 dark:border-gray-600"
+              [style.color]="colorTexto"
+            >
+              {{ currentUser.name }}
+            </div>
+
+            <!-- Enlaces del menú -->
+            <a
+              routerLink="/mi-cuenta"
+              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+              role="menuitem"
+              [style.color]="colorTexto"
+            >
+              Mi cuenta
+            </a>
+            <a
+              routerLink="/favoritos"
+              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+              role="menuitem"
+              [style.color]="colorTexto"
+            >
+              Mis favoritos
+            </a>
+            <!-- Botón para cerrar sesión -->
+            <a
+              routerLink="/auth/login"
+              (click)="handleLogout($event)"
+              class="w-full text-left block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600"
+              role="menuitem"
+            >
+              Cerrar sesión
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón del menú móvil -->
+      <div class="flex items-center md:hidden">
+        <!-- Botón de carrito móvil -->
+        <button
+          routerLink="/carrito"
+          class="relative mr-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
+          [style.color]="colorTexto"
+          title="Carrito de compras"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"
+            />
+          </svg>
+          <!-- Contador de items en el carrito móvil -->
+          <span
+            *ngIf="totalItemsCarrito() > 0"
+            class="absolute -top-1 -right-1 h-5 w-5 text-xs font-bold text-white rounded-full flex items-center justify-center"
+            [style.background-color]="colorPrimario"
+          >
+            {{ totalItemsCarrito() }}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          (click)="toggleMobileMenu()"
+          class="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+          [style.color]="colorTexto"
+        >
+          <svg
+            class="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16m-7 6h7"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menú móvil, mostrado/oculto según estado -->
+  <div
+    class="md:hidden"
+    [ngClass]="{ hidden: !mobileMenuOpen, block: mobileMenuOpen }"
+  >
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <a
+        routerLink="/"
+        class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+        [style.color]="colorTexto"
+        [style.hover-color]="colorEnlaces"
+        >Inicio</a
+      >
+      <a
+        routerLink="/catalogo"
+        class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+        [style.color]="colorTexto"
+        [style.hover-color]="colorEnlaces"
+        >Catálogo</a
+      >
+
+      <!-- Submenú móvil -->
+      <div>
+        <button
+          (click)="toggleMobileSubmenu()"
+          class="w-full flex justify-between dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+        >
+          Categorías
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="ml-1 h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            [ngClass]="{ 'rotate-180': mobileSubmenuOpen }"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+        <div
+          class="pl-4"
+          [ngClass]="{ hidden: !mobileSubmenuOpen, block: mobileSubmenuOpen }"
+        >
+          <!-- Estado de carga móvil -->
+          @if (cargandoCategorias()) {
+          <div
+            class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center"
+          >
+            <svg
+              class="animate-spin -ml-1 mr-2 h-4 w-4"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Cargando...
+          </div>
+          }
+
+          <!-- Todas las categorías móvil -->
+          @else if (categoriasPrincipales().length > 0) { @for (categoria of
+          categoriasPrincipales(); track categoria.id) {
+          <a
+            [routerLink]="'/productos-por-categoria/' + categoria.slug"
+            class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white py-2 rounded-md text-sm font-medium transition-colors duration-200"
+            [ngClass]="{
+              'px-3': !categoria.categoria_padre_id,
+              'px-6 pl-8': categoria.categoria_padre_id
+            }"
+            [style.color]="colorTexto"
+          >
+            <div class="flex items-center">
+              <!-- Icono para categorías principales móvil -->
+              <svg
+                *ngIf="!categoria.categoria_padre_id"
+                class="w-4 h-4 mr-2 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                />
+              </svg>
+              <!-- Icono para subcategorías móvil -->
+              <svg
+                *ngIf="categoria.categoria_padre_id"
+                class="w-3 h-3 mr-2 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+              <span
+                [ngClass]="{
+                  'font-medium': !categoria.categoria_padre_id,
+                  'text-sm text-gray-600 dark:text-gray-400':
+                    categoria.categoria_padre_id
+                }"
+              >
+                {{ categoria.nombre }}
+              </span>
+            </div>
+          </a>
+          }
+
+          <!-- Ver todas móvil -->
+          <a
+            routerLink="/catalogo"
+            class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition-colors duration-200"
+            [style.color]="colorEnlaces"
+            >Ver todas las categorías</a
+          >
+          }
+
+          <!-- Estado vacío móvil -->
+          @else {
+          <div class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+            No hay categorías disponibles
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- <a
+        routerLink="/proyectos"
+        class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+        [style.color]="colorTexto"
+        >Proyectos</a
+      > -->
+      <a
+        routerLink="/contacto"
+        class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+        [style.color]="colorTexto"
+        >Contacto</a
+      >
+
+      <!-- Botón de acceso (versión móvil) -->
+      <div *ngIf="!currentUser">
+        <button
+          routerLink="/auth/login"
+          class="w-full mt-2 hover:bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300"
+          [style.background-color]="colorPrimario"
+        >
+          Acceder
+        </button>
+      </div>
+
+      <!-- Opciones de usuario (versión móvil) -->
+      <div
+        *ngIf="currentUser"
+        class="border-t border-gray-200 dark:border-gray-600 pt-2"
+      >
+        <div class="px-3 py-2 font-medium" [style.color]="colorTexto">
+          {{ currentUser.name }}
+        </div>
+        <a
+          routerLink="/mi-cuenta"
+          class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+        >
+          Mi cuenta
+        </a>
+        <a
+          routerLink="/favoritos"
+          class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+        >
+          Mis favoritos
+        </a>
+        <!-- Opción para cerrar sesión en el menú móvil -->
+        <a
+          routerLink="/auth/login"
+          (click)="handleLogout($event)"
+          class="w-full text-left text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 px-3 py-2 rounded-md text-sm font-medium"
+        >
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Espacio para evitar que el contenido quede debajo del navbar fijo -->
+<div class="h-16"></div>
+
+<!-- Estilo global para el navbar -->
+<style>
+  :root {
+    --color-primario: {{ colorPrimario }};
+    --color-texto: {{ colorTexto }};
+    --color-enlaces: {{ colorEnlaces }};
+  }
+</style>

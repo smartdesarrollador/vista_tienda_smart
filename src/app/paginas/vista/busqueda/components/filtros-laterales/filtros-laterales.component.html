@@ -1,0 +1,240 @@
+<div class="bg-white rounded-lg border border-gray-200 sticky top-6">
+  <!-- Header -->
+  <div class="p-4 border-b border-gray-200">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900">Filtros</h2>
+      @if (totalFiltrosActivos > 0) {
+      <button
+        (click)="onLimpiarTodos()"
+        class="text-sm text-blue-600 hover:text-blue-800"
+      >
+        Limpiar todos ({{ totalFiltrosActivos }})
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="divide-y divide-gray-200">
+    <!-- Filtro de Precio -->
+    <div class="p-4">
+      <button
+        (click)="toggleSeccion('precio')"
+        class="flex items-center justify-between w-full text-left"
+      >
+        <span class="text-sm font-medium text-gray-900">Precio</span>
+        <svg
+          class="w-4 h-4 transform transition-transform"
+          [class.rotate-180]="estaExpandida('precio')"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          ></path>
+        </svg>
+      </button>
+
+      @if (estaExpandida('precio')) {
+      <div class="mt-3 space-y-3">
+        <form [formGroup]="rangoPrecioForm" class="space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            <input
+              type="number"
+              formControlName="min"
+              placeholder="Mín"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <input
+              type="number"
+              formControlName="max"
+              placeholder="Máx"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div class="flex gap-2">
+            <button
+              type="button"
+              (click)="aplicarRangoPrecio()"
+              class="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Aplicar
+            </button>
+            <button
+              type="button"
+              (click)="limpiarPrecio()"
+              class="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Limpiar
+            </button>
+          </div>
+        </form>
+      </div>
+      }
+    </div>
+
+    <!-- Filtro de Categorías -->
+    <div class="p-4">
+      <button
+        (click)="toggleSeccion('categoria')"
+        class="flex items-center justify-between w-full text-left"
+      >
+        <span class="text-sm font-medium text-gray-900">Categorías</span>
+        <svg
+          class="w-4 h-4 transform transition-transform"
+          [class.rotate-180]="estaExpandida('categoria')"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          ></path>
+        </svg>
+      </button>
+
+      @if (estaExpandida('categoria')) {
+      <div class="mt-3 space-y-2">
+        @for (categoria of categoriasVisibles(); track categoria.valor) {
+        <label class="flex items-center">
+          <input
+            type="checkbox"
+            [checked]="estaActivo('categoria', categoria.valor)"
+            (change)="onSeleccionarCategoria(categoria.valor, $event)"
+            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span class="ml-2 text-sm text-gray-700 flex-1">
+            {{ categoria.etiqueta }}
+          </span>
+          <span class="text-xs text-gray-500">
+            ({{ getConteoOpcion("categoria", categoria.valor) }})
+          </span>
+        </label>
+        } @if (tieneCategoriasExtras()) {
+        <button
+          (click)="toggleMasCategorias()"
+          class="text-sm text-blue-600 hover:text-blue-800"
+        >
+          {{ mostrarMasCategorias() ? "Ver menos" : "Ver más" }}
+        </button>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Filtro de Marcas -->
+    <div class="p-4">
+      <button
+        (click)="toggleSeccion('marca')"
+        class="flex items-center justify-between w-full text-left"
+      >
+        <span class="text-sm font-medium text-gray-900">Marcas</span>
+        <svg
+          class="w-4 h-4 transform transition-transform"
+          [class.rotate-180]="estaExpandida('marca')"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          ></path>
+        </svg>
+      </button>
+
+      @if (estaExpandida('marca')) {
+      <div class="mt-3 space-y-2">
+        @for (marca of marcasVisibles(); track marca.valor) {
+        <label class="flex items-center">
+          <input
+            type="checkbox"
+            [checked]="estaActivo('marca', marca.valor)"
+            (change)="onSeleccionarMarca(marca.valor, $event)"
+            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span class="ml-2 text-sm text-gray-700 flex-1">
+            {{ marca.etiqueta }}
+          </span>
+          <span class="text-xs text-gray-500">
+            ({{ getConteoOpcion("marca", marca.valor) }})
+          </span>
+        </label>
+        } @if (tieneMarcasExtras()) {
+        <button
+          (click)="toggleMasMarcas()"
+          class="text-sm text-blue-600 hover:text-blue-800"
+        >
+          {{ mostrarMasMarcas() ? "Ver menos" : "Ver más" }}
+        </button>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Filtros Adicionales -->
+    @for (filtro of filtrosAtributos; track filtro.campo) {
+    <div class="p-4">
+      <button
+        (click)="toggleSeccion(filtro.campo)"
+        class="flex items-center justify-between w-full text-left"
+      >
+        <span class="text-sm font-medium text-gray-900">{{
+          filtro.label
+        }}</span>
+        <svg
+          class="w-4 h-4 transform transition-transform"
+          [class.rotate-180]="estaExpandida(filtro.campo)"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          ></path>
+        </svg>
+      </button>
+
+      @if (estaExpandida(filtro.campo) && filtro.opciones) {
+      <div class="mt-3 space-y-2">
+        @for (opcion of filtro.opciones; track opcion.valor) {
+        <label class="flex items-center">
+          <input
+            type="checkbox"
+            [checked]="estaActivo(filtro.campo, opcion.valor)"
+            (change)="
+              onSeleccionarAtributo(
+                filtro.campo,
+                opcion.valor,
+                opcion.etiqueta,
+                $event
+              )
+            "
+            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span class="ml-2 text-sm text-gray-700 flex-1">
+            {{ opcion.etiqueta }}
+          </span>
+          <span class="text-xs text-gray-500">
+            ({{ opcion.conteo || 0 }})
+          </span>
+        </label>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>

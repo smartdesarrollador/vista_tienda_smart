@@ -1,0 +1,54 @@
+/* Estilos específicos para el componente FiltroPersonalizado */
+/* Los estilos están principalmente en las clases de Tailwind CSS */
+
+/* Scrollbar personalizado para las listas de filtros */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 4px;
+}
+
+.scrollbar-track-gray-100::-webkit-scrollbar-track {
+  background-color: #f3f4f6;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Animaciones para el modal */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  transition: opacity 0.3s ease;
+}
+
+/* Efectos hover para las marcas */
+.marca-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para los logos de marcas */
+.marca-logo {
+  filter: grayscale(0.3);
+  transition: filter 0.2s ease;
+}
+
+.marca-logo:hover {
+  filter: grayscale(0);
+}
+
+/* Estados de filtros activos */
+.filtro-activo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+/* Animaciones de transición para secciones expandibles */
+.seccion-content {
+  transition: max-height 0.3s ease;
+  overflow: hidden;
+}

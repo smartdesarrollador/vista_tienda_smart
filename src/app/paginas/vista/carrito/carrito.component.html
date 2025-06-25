@@ -1,0 +1,163 @@
+<!-- Contenedor principal del carrito -->
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header del carrito -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        Mi Carrito de Compras
+      </h1>
+      <p class="text-gray-600">
+        @if (totalItems() > 0) {
+        {{ totalItems() }}
+        {{ totalItems() === 1 ? "producto" : "productos" }} en tu carrito }
+        @else { Tu carrito está vacío }
+      </p>
+    </div>
+
+    <!-- Estado de carga -->
+    @if (cargando()) {
+    <div class="flex justify-center items-center py-16">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+      ></div>
+      <span class="ml-3 text-gray-600">Cargando carrito...</span>
+    </div>
+    }
+
+    <!-- Error -->
+    @if (error()) {
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex">
+        <svg
+          class="flex-shrink-0 h-5 w-5 text-red-400"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Error en el carrito</h3>
+          <p class="mt-1 text-sm text-red-700">{{ error() }}</p>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Contenido principal -->
+    @if (!cargando()) {
+    <!-- Carrito con productos -->
+    @if (!estaVacio()) {
+    <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+      <!-- Lista de productos (8 columnas en desktop) -->
+      <div class="lg:col-span-8">
+        <!-- Botón limpiar carrito -->
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-semibold text-gray-900">
+            Productos seleccionados
+          </h2>
+          <button
+            (click)="limpiarCarrito()"
+            class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors duration-200"
+          >
+            <svg
+              class="w-4 h-4 inline mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+            Limpiar carrito
+          </button>
+        </div>
+
+        <!-- Componente lista de items -->
+        <app-lista-items-carrito />
+
+        <!-- Calculadora de envío -->
+        <div class="mt-8">
+          <app-calculadora-envio
+            [compacto]="false"
+            [mostrarDirecciones]="true"
+            [mostrarMapaInteractivo]="false"
+            (opcionSeleccionada)="onOpcionEnvioSeleccionada($event)"
+            (direccionActualizada)="onDireccionActualizada($event)"
+          />
+        </div>
+
+        <!-- Cupones de descuento -->
+        <div class="mt-8">
+          <app-cupones-descuento
+            [compacto]="false"
+            [mostrarSugerencias]="true"
+            [maxCuponesSugeridos]="4"
+            (cuponAplicado)="onCuponAplicado($event)"
+            (cuponEliminado)="onCuponEliminado($event)"
+          />
+        </div>
+      </div>
+
+      <!-- Resumen del pedido (4 columnas en desktop) -->
+      <div class="lg:col-span-4 mt-8 lg:mt-0">
+        <!-- Componente de resumen -->
+        <app-resumen-carrito
+          [mostrarBotonCheckout]="true"
+          [mostrarBotonContinuar]="true"
+          [compacto]="false"
+          [sticky]="true"
+          (checkoutClick)="irAlCheckout()"
+          (continuarClick)="continuarComprando()"
+          data-carrito-resumen
+        />
+
+        <!-- Items guardados (solo si hay) -->
+        @if (esUsuarioLogueado()) {
+        <div class="mt-6">
+          <app-items-guardados
+            [compacto]="true"
+            [mostrarAcciones]="true"
+            [maxItemsVisibles]="3"
+            (itemMovidoAlCarrito)="onItemMovidoAlCarrito($event)"
+            (itemEliminado)="onItemEliminado($event)"
+          />
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Carrito vacío -->
+    @else {
+    <div class="space-y-8">
+      <!-- Componente carrito vacío -->
+      <app-carrito-vacio
+        [productosRelacionados]="productosRelacionados()"
+        [cargando]="cargandoRelacionados()"
+      />
+
+      <!-- Lista de deseos para usuarios logueados cuando el carrito está vacío -->
+      @if (esUsuarioLogueado()) {
+      <app-items-guardados
+        [compacto]="false"
+        [mostrarAcciones]="true"
+        [maxItemsVisibles]="6"
+        (itemMovidoAlCarrito)="onItemMovidoAlCarrito($event)"
+        (itemEliminado)="onItemEliminado($event)"
+      />
+      }
+    </div>
+    } }
+  </div>
+</div>
+
+<!-- Componente de notificaciones toast -->
+<app-notificaciones-carrito />

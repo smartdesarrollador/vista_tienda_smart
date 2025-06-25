@@ -1,0 +1,485 @@
+/* Estilos para CuponesDescuentoComponent */
+
+/* Contenedor principal */
+.cupones-container {
+  transition: all 0.3s ease;
+}
+
+/* Cupones aplicados */
+.coupon-applied {
+  animation: slideInLeft 0.5s ease-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.coupon-applied:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px -2px rgba(34, 197, 94, 0.25);
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Formulario de cupón */
+.coupon-form {
+  animation: slideInDown 0.4s ease-out;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: 1px solid #e2e8f0;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Input de código de cupón */
+.coupon-input {
+  transition: all 0.3s ease;
+}
+
+.coupon-input:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -3px rgba(59, 130, 246, 0.15);
+}
+
+/* Botón aplicar cupón */
+.apply-button {
+  background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.apply-button:hover:not(:disabled) {
+  background: linear-gradient(45deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(59, 130, 246, 0.4);
+}
+
+.apply-button:disabled {
+  background: #d1d5db;
+  transform: none;
+  box-shadow: none;
+}
+
+.apply-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.apply-button:hover::before {
+  left: 100%;
+}
+
+/* Cupones sugeridos */
+.coupon-suggestion {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.coupon-suggestion:hover:not(.opacity-50) {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.coupon-suggestion::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.05),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.coupon-suggestion:hover::before {
+  left: 100%;
+}
+
+/* Cupones destacados */
+.coupon-featured {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 2px solid #3b82f6;
+  position: relative;
+}
+
+.coupon-featured::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+}
+
+/* Badges de categoría */
+.category-badge {
+  transition: all 0.2s ease;
+}
+
+.category-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Iconos de categoría */
+.category-icon {
+  transition: all 0.3s ease;
+}
+
+.coupon-suggestion:hover .category-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Animaciones de aparición */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efecto de carga para cupones */
+.coupon-skeleton {
+  background: linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Estados de mensaje */
+.success-message {
+  animation: successSlide 0.5s ease-out;
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border-left: 4px solid #10b981;
+}
+
+.error-message {
+  animation: errorShake 0.6s ease-out;
+  background: linear-gradient(135deg, #fef2f2, #fecaca);
+  border-left: 4px solid #ef4444;
+}
+
+@keyframes successSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes errorShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-2px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+/* Efectos de precio */
+.price-highlight {
+  font-weight: 700;
+  animation: priceGlow 2s ease-in-out infinite;
+}
+
+@keyframes priceGlow {
+  0%,
+  100% {
+    text-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+  }
+}
+
+/* Estados de validación */
+.form-valid {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-invalid {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Loading spinner personalizado */
+.coupon-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Botón eliminar cupón */
+.remove-coupon {
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.remove-coupon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  color: #dc2626;
+}
+
+/* Grid de cupones responsivo */
+.coupons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Animación escalonada para múltiples cupones */
+.coupon-suggestion:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.coupon-suggestion:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.coupon-suggestion:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.coupon-suggestion:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Estado vacío */
+.empty-coupons {
+  animation: fadeInScale 0.8s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Alerta de límite alcanzado */
+.limit-alert {
+  animation: pulseWarning 2s infinite;
+  background: linear-gradient(135deg, #fefce8, #fef3c7);
+  border-left: 4px solid #f59e0b;
+}
+
+@keyframes pulseWarning {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Tooltips para cupones */
+.coupon-tooltip {
+  position: relative;
+}
+
+.coupon-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.coupon-tooltip:hover::after {
+  opacity: 1;
+}
+
+/* Efectos de progreso para aplicación */
+.applying-progress {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .coupon-suggestion:hover {
+    transform: none;
+  }
+
+  .coupon-applied:hover {
+    transform: none;
+  }
+
+  .apply-button:hover {
+    transform: none;
+  }
+
+  .coupons-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .coupon-suggestion {
+    padding: 1rem;
+  }
+
+  .coupon-form {
+    padding: 1rem;
+  }
+}
+
+/* Focus states para accesibilidad */
+.focus-visible:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+/* Transiciones suaves para cambios de estado */
+.state-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efectos especiales para cupones premium */
+.premium-coupon {
+  background: linear-gradient(45deg, #8b5cf6, #a855f7);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-coupon::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: premiumGlow 3s linear infinite;
+}
+
+@keyframes premiumGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Indicadores de tiempo limitado */
+.limited-time {
+  position: relative;
+}
+
+.limited-time::before {
+  content: "⏰";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 1.2rem;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}

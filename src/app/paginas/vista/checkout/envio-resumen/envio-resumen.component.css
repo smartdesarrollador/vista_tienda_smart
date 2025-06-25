@@ -1,0 +1,75 @@
+/* Estilos específicos para envío y resumen */
+.shipping-option {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.shipping-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shipping-option.selected {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.shipping-price {
+  font-weight: 600;
+  color: #059669;
+}
+
+.shipping-time {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Estilos para el resumen */
+.summary-section {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.summary-total {
+  border-top: 2px solid #e5e7eb;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+/* Animaciones */
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .shipping-option {
+    padding: 1rem;
+  }
+
+  .summary-section {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,285 @@
+/* Estilos personalizados para el componente de búsqueda */
+
+/* Animaciones personalizadas */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Clases de animación */
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Estilos para el contenedor principal */
+.busqueda-container {
+  min-height: calc(100vh - 200px);
+}
+
+/* Estilos para las cards de productos */
+.producto-card {
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.producto-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Estilos para los filtros activos */
+.filtro-activo {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: 1px solid #2563eb;
+  transition: all 0.2s ease;
+}
+
+.filtro-activo:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  transform: scale(1.02);
+}
+
+/* Estilos para el modal de filtros móvil */
+.filtros-modal {
+  backdrop-filter: blur(4px);
+}
+
+.filtros-panel {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Estilos para el toggle de vista */
+.vista-toggle {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.vista-toggle button {
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.vista-toggle button.active {
+  background: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Estilos para la paginación */
+.paginacion-container {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Estilos para estados vacíos */
+.estado-vacio {
+  background: radial-gradient(circle at center, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+}
+
+/* Estilos para sugerencias */
+.sugerencias-container {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 1px solid #93c5fd;
+  border-radius: 8px;
+}
+
+.sugerencia-item {
+  transition: all 0.2s ease;
+}
+
+.sugerencia-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  transform: translateX(2px);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .busqueda-container {
+    padding: 1rem;
+  }
+
+  .filtros-panel {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+/* Estilos para focus y accesibilidad */
+.focus-visible:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Estilos para scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Estilos para el indicador de carga más resultados */
+.cargar-mas-indicator {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.1),
+    transparent
+  );
+  animation: slide 1.5s infinite;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Estilos para badges y contadores */
+.badge-filtros {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  font-weight: 600;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+/* Estilos para transiciones suaves */
+* {
+  transition-property: background-color, border-color, color, fill, stroke,
+    opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Estilos para hover effects en elementos interactivos */
+.interactive-element:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para la búsqueda sin resultados */
+.no-resultados {
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border: 2px dashed #d1d5db;
+}
+
+/* Estilos para elementos sticky */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+/* Mejoras de performance para animaciones */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Estilos para dark mode (preparación futura) */
+@media (prefers-color-scheme: dark) {
+  .dark-mode-ready {
+    /* Los estilos de dark mode se añadirán aquí cuando sea necesario */
+  }
+}
+
+/* Estilos para reduce-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

@@ -1,0 +1,418 @@
+<!-- Catálogo de Productos -->
+<div class="min-h-screen bg-gray-50">
+  <!-- Header del Catálogo -->
+  <div class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-6">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-4" aria-label="Breadcrumb">
+          <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+              <a
+                href="/"
+                class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
+              >
+                <svg
+                  class="w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+                  />
+                </svg>
+                Inicio
+              </a>
+            </li>
+            <li>
+              <div class="flex items-center">
+                <svg
+                  class="w-6 h-6 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span class="ml-1 text-sm font-medium text-gray-900 md:ml-2"
+                  >Catálogo</span
+                >
+              </div>
+            </li>
+          </ol>
+        </nav>
+
+        <!-- Título y Búsqueda -->
+        <div
+          class="flex flex-col lg:flex-row lg:items-center lg:justify-between"
+        >
+          <div class="flex-1">
+            <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
+              Catálogo de Productos
+            </h1>
+            <p class="mt-2 text-sm text-gray-600">
+              Descubre nuestra amplia selección de productos de tecnología
+            </p>
+          </div>
+
+          <!-- Barra de Búsqueda -->
+          <div class="mt-4 lg:mt-0 lg:ml-6">
+            <div class="flex">
+              <div class="relative flex-1 max-w-lg">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    class="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Buscar productos..."
+                  [value]="terminoBusqueda()"
+                  (input)="onBusquedaChange($event)"
+                />
+                @if (buscandoProductos()) {
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <svg
+                    class="w-5 h-5 text-gray-400 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    />
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                </div>
+                }
+              </div>
+              <button
+                type="button"
+                class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                (click)="buscarProductos()"
+                [disabled]="buscandoProductos()"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="lg:grid lg:grid-cols-4 lg:gap-8">
+      <!-- Sidebar de Filtros -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-6">
+          <!-- Toggle Filtros (Solo Mobile) -->
+          <div class="lg:hidden mb-4">
+            <button
+              type="button"
+              class="w-full flex items-center justify-between px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
+              (click)="toggleFiltros()"
+            >
+              <span class="flex items-center">
+                <svg
+                  class="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                  />
+                </svg>
+                Filtros
+              </span>
+              <svg
+                class="w-5 h-5 transform transition-transform duration-200"
+                [class.rotate-180]="!mostrandoFiltros()"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Panel de Filtros -->
+          <div class="block lg:block" [class.hidden]="!mostrandoFiltros()">
+            <app-filtros-avanzados
+              [filtrosIniciales]="filtrosActivos()"
+              [categoriasDisponibles]="categoriasDisponibles()"
+              (filtrosAplicados)="onFiltrosAplicados($event)"
+              (filtrosLimpiados)="onFiltrosLimpiados()"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Área de Productos -->
+      <div class="lg:col-span-3 mt-6 lg:mt-0">
+        <!-- Barra de Herramientas -->
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
+          <div class="px-4 py-3">
+            <div
+              class="flex flex-col sm:flex-row sm:items-center sm:justify-between"
+            >
+              <!-- Resultados y Ordenamiento -->
+              <div class="flex items-center space-x-4">
+                <div class="text-sm text-gray-700">
+                  <span class="font-medium">{{ totalFiltrado() }}</span>
+                  {{ totalFiltrado() === 1 ? "producto" : "productos" }}
+                  @if (terminoBusqueda()) {
+                  <span
+                    >para "<span class="font-medium">{{
+                      terminoBusqueda()
+                    }}</span
+                    >"</span
+                  >
+                  }
+                </div>
+
+                <!-- Ordenamiento -->
+                <div class="hidden sm:block">
+                  <select
+                    class="border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                    [value]="ordenamientoActual()"
+                    (change)="cambiarOrdenamiento($any($event.target).value)"
+                  >
+                    <option value="relevancia">Más Relevantes</option>
+                    <option value="precio_asc">Precio: Menor a Mayor</option>
+                    <option value="precio_desc">Precio: Mayor a Menor</option>
+                    <option value="nombre_asc">Nombre A-Z</option>
+                    <option value="nombre_desc">Nombre Z-A</option>
+                    <option value="rating_desc">Mejor Calificados</option>
+                    <option value="mas_vendidos">Más Populares</option>
+                    <option value="destacados">Destacados</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Controles de Vista -->
+              <div class="flex items-center space-x-2 mt-3 sm:mt-0">
+                <!-- Toggle Vista -->
+                <div
+                  class="flex border border-gray-300 rounded-md overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    class="px-3 py-2 text-sm font-medium transition-colors duration-200"
+                    [class.bg-blue-600]="vistaActual() === 'grid'"
+                    [class.text-white]="vistaActual() === 'grid'"
+                    [class.bg-white]="vistaActual() !== 'grid'"
+                    [class.text-gray-700]="vistaActual() !== 'grid'"
+                    [class.hover:bg-gray-50]="vistaActual() !== 'grid'"
+                    (click)="cambiarVista('grid')"
+                    title="Vista en Grilla"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="px-3 py-2 text-sm font-medium transition-colors duration-200"
+                    [class.bg-blue-600]="vistaActual() === 'lista'"
+                    [class.text-white]="vistaActual() === 'lista'"
+                    [class.bg-white]="vistaActual() !== 'lista'"
+                    [class.text-gray-700]="vistaActual() !== 'lista'"
+                    [class.hover:bg-gray-50]="vistaActual() !== 'lista'"
+                    (click)="cambiarVista('lista')"
+                    title="Vista en Lista"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ordenamiento Mobile -->
+            <div class="sm:hidden mt-3">
+              <select
+                class="w-full border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                [value]="ordenamientoActual()"
+                (change)="cambiarOrdenamiento($any($event.target).value)"
+              >
+                <option value="relevancia">Más Relevantes</option>
+                <option value="precio_asc">Precio: Menor a Mayor</option>
+                <option value="precio_desc">Precio: Mayor a Menor</option>
+                <option value="nombre_asc">Nombre A-Z</option>
+                <option value="nombre_desc">Nombre Z-A</option>
+                <option value="rating_desc">Mejor Calificados</option>
+                <option value="mas_vendidos">Más Populares</option>
+                <option value="destacados">Destacados</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Productos -->
+        <div id="productos-lista">
+          @if (loading()) {
+          <!-- Estado de Carga -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (item of [1,2,3,4,5,6]; track item) {
+            <div
+              class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden animate-pulse"
+            >
+              <div class="aspect-square bg-gray-200"></div>
+              <div class="p-4">
+                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div class="h-6 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </div>
+            }
+          </div>
+          } @else if (tieneResultados()) {
+          <!-- Productos usando ProductoCard -->
+          @if (vistaActual() === 'grid') {
+          <!-- Vista en Grilla -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (producto of productosPaginados(); track producto.id) {
+            <app-producto-card
+              [producto]="producto"
+              [vista]="getVistaProductoCard()"
+              [configuracion]="configProductoCard"
+              (onCarritoClick)="onProductoCardEventos($event)"
+              (onProductoClick)="onProductoCardEventos($event)"
+            />
+            }
+          </div>
+          } @else {
+          <!-- Vista en Lista -->
+          <div class="space-y-4">
+            @for (producto of productosPaginados(); track producto.id) {
+            <app-producto-card
+              [producto]="producto"
+              [vista]="getVistaProductoCard()"
+              [configuracion]="configProductoCard"
+              (onCarritoClick)="onProductoCardEventos($event)"
+              (onProductoClick)="onProductoCardEventos($event)"
+            />
+            }
+          </div>
+          }
+
+          <!-- Paginación usando componente reutilizable -->
+          @if (totalPaginasCalculado() > 1) {
+          <div class="mt-8 bg-white border border-gray-200 rounded-lg">
+            <app-pagination
+              [totalItems]="totalFiltrado()"
+              [currentPage]="paginaActual()"
+              [itemsPerPage]="productosPorPagina()"
+              [pageSizeOptions]="[12, 24, 48, 96]"
+              [maxVisiblePages]="5"
+              [showFirstLast]="true"
+              [showPrevNext]="true"
+              [showPageNumbers]="true"
+              [showPageSize]="true"
+              [showItemsInfo]="true"
+              [disabled]="loading()"
+              (pageChange)="onPageChange($event)"
+              (pageSizeChange)="onPageSizeChange($event)"
+            >
+            </app-pagination>
+          </div>
+          } } @else {
+          <!-- Estado Sin Resultados -->
+          <div class="text-center py-12">
+            <svg
+              class="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-4v4m-8-4v4m-3-4v4"
+              />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">
+              No se encontraron productos
+            </h3>
+            <p class="mt-1 text-sm text-gray-500">
+              @if (terminoBusqueda()) { No hay productos que coincidan con tu
+              búsqueda "{{ terminoBusqueda() }}". } @else { No hay productos que
+              coincidan con los filtros seleccionados. }
+            </p>
+            <div class="mt-6">
+              <button
+                type="button"
+                class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                (click)="onFiltrosLimpiados()"
+              >
+                <svg
+                  class="-ml-0.5 mr-1.5 h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
+                  />
+                </svg>
+                Limpiar Filtros
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

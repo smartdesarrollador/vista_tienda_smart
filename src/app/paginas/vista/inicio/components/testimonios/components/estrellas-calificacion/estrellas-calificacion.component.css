@@ -1,0 +1,145 @@
+/* Estilos específicos para el componente estrellas-calificacion */
+
+/* Animaciones suaves para las estrellas */
+.estrella-svg {
+  transition: all 0.2s ease-in-out;
+}
+
+.estrella-svg:hover {
+  transform: scale(1.1);
+}
+
+/* Gradientes personalizados para media estrella */
+.star-gradient {
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Estados de estrella con mejor contraste */
+.estrella-llena {
+  color: #fbbf24;
+  fill: #fbbf24;
+  filter: drop-shadow(0 1px 2px rgba(251, 191, 36, 0.3));
+}
+
+.estrella-media {
+  color: #fbbf24;
+  fill: url(#star-gradient);
+}
+
+.estrella-vacia {
+  color: #d1d5db;
+  fill: #d1d5db;
+}
+
+/* Variaciones de tamaño */
+.estrellas-xs svg {
+  width: 12px;
+  height: 12px;
+}
+
+.estrellas-sm svg {
+  width: 16px;
+  height: 16px;
+}
+
+.estrellas-md svg {
+  width: 20px;
+  height: 20px;
+}
+
+.estrellas-lg svg {
+  width: 24px;
+  height: 24px;
+}
+
+.estrellas-xl svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Espaciado entre estrellas */
+.contenedor-estrellas {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Texto de calificación */
+.texto-calificacion {
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+.texto-default {
+  color: #111827;
+}
+
+.texto-muted {
+  color: #6b7280;
+}
+
+.texto-white {
+  color: #ffffff;
+}
+
+/* Número de calificación */
+.numero-calificacion {
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-left: 0.25rem;
+  opacity: 0.8;
+}
+
+/* Animación suave para cambios de calificación */
+@keyframes calificacion-change {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.estrella-animada {
+  animation: calificacion-change 0.3s ease-in-out;
+}
+
+/* Responsive - en móvil las estrellas son un poco más pequeñas */
+@media (max-width: 640px) {
+  .contenedor-estrellas svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .texto-calificacion,
+  .numero-calificacion {
+    font-size: 0.8rem;
+  }
+}
+
+/* Mejoras de accesibilidad */
+.contenedor-estrellas:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Dark mode ready (para futuro) */
+@media (prefers-color-scheme: dark) {
+  .estrella-vacia {
+    color: #4b5563;
+    fill: #4b5563;
+  }
+
+  .texto-default {
+    color: #f9fafb;
+  }
+
+  .texto-muted {
+    color: #9ca3af;
+  }
+}

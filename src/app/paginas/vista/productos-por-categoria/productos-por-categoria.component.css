@@ -1,0 +1,81 @@
+/* Estilos específicos para el componente productos-por-categoria */
+
+/* Animaciones personalizadas */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mejoras para la accesibilidad */
+.focus-visible\:ring-custom:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Estilos específicos para los botones de paginación */
+.pagination-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.pagination-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Personalización del selector */
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+/* Estilo para el loading spinner */
+.spinner {
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 640px) {
+  .mobile-optimized {
+    padding: 0.75rem;
+  }
+}
+
+/* Estilos para el estado vacío */
+.empty-state-icon {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* Transiciones suaves para los cambios de vista */
+.view-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mejoras para el breadcrumb */
+.breadcrumb-separator {
+  opacity: 0.5;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.breadcrumb-item:hover .breadcrumb-separator {
+  opacity: 0.8;
+}

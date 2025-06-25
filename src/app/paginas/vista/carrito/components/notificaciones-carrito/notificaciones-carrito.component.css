@@ -1,0 +1,236 @@
+/* Estilos para NotificacionesCarritoComponent */
+
+/* Contenedor principal de notificaciones */
+.notification-container {
+  pointer-events: none;
+}
+
+.notification-container > * {
+  pointer-events: auto;
+}
+
+/* Toast notifications */
+.notification-toast {
+  backdrop-filter: blur(8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notification-toast:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Animaciones de entrada y salida */
+.notification-enter {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.notification-exit {
+  animation: slideOutRight 0.3s ease-in;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Efectos de hover para botones */
+.notification-action {
+  transition: all 0.2s ease;
+}
+
+.notification-action:hover {
+  transform: translateY(-1px);
+}
+
+/* Barra de progreso animada */
+.progress-bar {
+  animation: progress-countdown linear forwards;
+  transform-origin: left;
+}
+
+@keyframes progress-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Estados específicos por tipo */
+.notification-success {
+  border-left: 4px solid #10b981;
+}
+
+.notification-error {
+  border-left: 4px solid #ef4444;
+}
+
+.notification-warning {
+  border-left: 4px solid #f59e0b;
+}
+
+.notification-info {
+  border-left: 4px solid #3b82f6;
+}
+
+/* Efectos de pulso para iconos importantes */
+.icon-pulse {
+  animation: iconPulse 2s infinite;
+}
+
+@keyframes iconPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Botón cerrar mejorado */
+.close-button {
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+/* Texto truncado para mensajes largos */
+.message-text {
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .notification-toast {
+    max-width: calc(100vw - 2rem);
+    margin: 0 1rem;
+  }
+
+  .notification-container {
+    left: 0;
+    right: 0;
+    top: 1rem;
+  }
+}
+
+/* Focus states para accesibilidad */
+.notification-toast:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Efectos de stacking para múltiples notificaciones */
+.notification-stack {
+  transform-style: preserve-3d;
+}
+
+.notification-stack .notification-toast:nth-child(2) {
+  transform: translateY(-4px) scale(0.98);
+  opacity: 0.9;
+  z-index: -1;
+}
+
+.notification-stack .notification-toast:nth-child(3) {
+  transform: translateY(-8px) scale(0.96);
+  opacity: 0.8;
+  z-index: -2;
+}
+
+/* Animación de shake para errores críticos */
+.notification-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* Efectos de gradiente para fondos */
+.notification-gradient-success {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+}
+
+.notification-gradient-error {
+  background: linear-gradient(135deg, #fee2e2, #fca5a5);
+}
+
+.notification-gradient-warning {
+  background: linear-gradient(135deg, #fef3c7, #fcd34d);
+}
+
+.notification-gradient-info {
+  background: linear-gradient(135deg, #dbeafe, #93c5fd);
+}
+
+/* Botón limpiar todas mejorado */
+.clear-all-button {
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.clear-all-button:hover {
+  background-color: #f3f4f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Indicador de tiempo relativo */
+.time-indicator {
+  font-variant-numeric: tabular-nums;
+  transition: opacity 0.2s ease;
+}
+
+.notification-toast:hover .time-indicator {
+  opacity: 1;
+}
+
+/* Optimizaciones para animaciones */
+.notification-toast {
+  will-change: transform, opacity;
+}
+
+.progress-bar {
+  will-change: transform;
+}
+
+/* Dark mode support (opcional) */
+@media (prefers-color-scheme: dark) {
+  .notification-toast {
+    backdrop-filter: blur(12px);
+  }
+}
