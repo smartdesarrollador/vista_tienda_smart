@@ -119,7 +119,6 @@ import {
             [producto]="producto"
             vista="grid"
             [configuracion]="configProductoCard"
-            [esFavorito]="esFavorito(producto.id)"
             (onCarritoClick)="onCarritoClick($event)"
             (onFavoritoToggle)="onFavoritoToggle($event)"
             (onProductoClick)="onProductoClick($event)"

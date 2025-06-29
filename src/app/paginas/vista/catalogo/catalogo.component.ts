@@ -11,13 +11,13 @@ import {
   ProductoCardEventos,
   ProductoCardConfig,
   VistaProductoCard,
-} from '../../../shared/components/producto-card';
+} from '../../../shared/components/producto-card/producto-card.component';
 import {
   Producto,
   ProductosResponse,
 } from '../../../core/models/producto.interface';
 import { ProductoService } from '../../../core/services/producto.service';
-import { PaginationComponent } from '../../../shared/components/pagination';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { PageChangeEvent, PageSizeChangeEvent } from '../../../core/models';
 
 /**

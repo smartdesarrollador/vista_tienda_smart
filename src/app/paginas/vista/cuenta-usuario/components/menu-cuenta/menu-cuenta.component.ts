@@ -5,12 +5,14 @@ import {
   EventEmitter,
   signal,
   computed,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 import { User } from '../../../../../core/models/user.model';
 import { EstadisticasUsuario } from '../../../../../core/models/cuenta-usuario.interface';
+import { AuthService } from '../../../../../core/auth/services/auth.service';
 
 /**
  * 📋 Interfaz para items del menú
@@ -279,6 +281,10 @@ export class MenuCuentaComponent {
 
   @Output() seccionSeleccionada = new EventEmitter<string>();
 
+  // Servicios inyectados
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
   // 🚦 Signal para la inicial del usuario
   protected readonly inicialUsuario = computed(() => {
     const nombre = this.usuario?.name;
@@ -353,7 +359,18 @@ export class MenuCuentaComponent {
    * 🚪 Cerrar sesión
    */
   protected cerrarSesion(): void {
-    // TODO: Implementar lógica de cierre de sesión
-    console.log('🚪 Cerrando sesión...');
+    // Confiar en la lógica de logout del AuthService que ya maneja todos los casos
+    this.authService.logout().subscribe({
+      next: () => {
+        // El AuthService ya redirige al login después de limpiar los datos
+        console.log('✅ Sesión cerrada exitosamente');
+      },
+      error: (error) => {
+        // El AuthService ya maneja los errores, incluyendo el 401
+        console.error('❌ Error al cerrar sesión:', error);
+        // Aún así, redirigir al login por seguridad
+        this.router.navigate(['/auth/login']);
+      },
+    });
   }
 }

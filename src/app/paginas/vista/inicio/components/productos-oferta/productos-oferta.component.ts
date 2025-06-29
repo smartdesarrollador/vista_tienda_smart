@@ -24,7 +24,7 @@ import {
   ProductoCardComponent,
   ProductoCardEventos,
   ProductoCardConfig,
-} from '../../../../../shared/components/producto-card';
+} from '../../../../../shared/components/producto-card/producto-card.component';
 
 interface ProductoConOferta extends Producto {
   fecha_fin_oferta?: Date | string;

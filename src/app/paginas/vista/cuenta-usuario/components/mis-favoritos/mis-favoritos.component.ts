@@ -12,6 +12,7 @@ import { CuentaUsuarioService } from '../../../../../core/services/cuenta-usuari
 import { FiltrosFavoritosUsuario } from '../../../../../core/models/cuenta-usuario.interface';
 import { Producto } from '../../../../../core/models/producto.interface';
 import { PaginationMeta } from '../../../../../core/models/common.interface';
+import { environment } from '../../../../../../environments/environment';
 
 /**
  * ❤️ Componente Mis Favoritos
@@ -276,7 +277,7 @@ import { PaginationMeta } from '../../../../../core/models/common.interface';
               <div class="relative aspect-square overflow-hidden">
                 @if (producto.imagen_principal) {
                 <img
-                  [src]="producto.imagen_principal"
+                  [src]="getImagenUrl(producto.imagen_principal)"
                   [alt]="producto.nombre"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                 />
@@ -768,5 +769,22 @@ export class MisFavoritosComponent implements OnInit {
   protected compartirFavoritos(): void {
     // TODO: Implementar compartir lista
     console.log('📤 Compartir lista de favoritos');
+  }
+
+  /**
+   * 🖼️ Obtener URL completa de imagen
+   */
+  protected getImagenUrl(rutaImagen: string | null | undefined): string {
+    if (!rutaImagen) {
+      return 'assets/productos/default.jpg';
+    }
+
+    // Si ya es una URL completa, la devolvemos tal como está
+    if (rutaImagen.startsWith('http://') || rutaImagen.startsWith('https://')) {
+      return rutaImagen;
+    }
+
+    // Concatenar con la URL base del environment
+    return `${environment.urlDominioApi}/${rutaImagen}`;
   }
 }

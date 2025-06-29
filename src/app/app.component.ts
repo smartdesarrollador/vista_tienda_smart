@@ -6,6 +6,7 @@ import {
   RouterModule,
   RouterOutlet,
 } from '@angular/router';
+import { BackToTopComponent } from './shared/components';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,7 @@ import {
     RouterModule,
     RouterLink,
     RouterLinkActive,
+    BackToTopComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',

@@ -6,11 +6,15 @@ import {
   signal,
   inject,
   PLATFORM_ID,
+  effect,
+  untracked,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Producto } from '../../../core/models/producto.interface';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/auth/services/auth.service';
+import { FavoritoService } from '../../../core/services/favorito.service';
 
 /**
  * Tipos de vista del componente
@@ -79,18 +83,38 @@ export class ProductoCardComponent {
   // Platform ID para verificar si estamos en el browser
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly favoritoService = inject(FavoritoService);
 
   // Inputs del componente
   readonly producto = input.required<Producto>();
   readonly vista = input<VistaProductoCard>('grid');
   readonly configuracion = input<Partial<ProductoCardConfig>>({});
-  readonly esFavorito = input<boolean>(false);
 
   // Outputs del componente
   readonly onCarritoClick = output<ProductoCardEventos>();
   readonly onFavoritoToggle = output<ProductoCardEventos>();
   readonly onVistaRapida = output<ProductoCardEventos>();
   readonly onProductoClick = output<ProductoCardEventos>();
+
+  // Signals para manejo de estado
+  readonly esFavorito = signal<boolean>(false);
+  readonly cargandoFavorito = signal<boolean>(false);
+
+  // Effect para verificar favorito cuando cambie el usuario o producto
+  private readonly verificarFavoritoEffect = effect(() => {
+    const usuario = this.authService.currentUser();
+    const producto = this.producto();
+
+    // Usar untracked para las operaciones que escriben a signals
+    untracked(() => {
+      if (usuario && producto && isPlatformBrowser(this.platformId)) {
+        this.verificarFavorito(usuario.id, producto.id);
+      } else {
+        this.esFavorito.set(false);
+      }
+    });
+  });
 
   // Señales computadas para configuración final
   readonly configFinal = computed<ProductoCardConfig>(() => ({
@@ -220,10 +244,70 @@ export class ProductoCardComponent {
     event.preventDefault();
     event.stopPropagation();
 
-    this.onFavoritoToggle.emit({
-      producto: this.producto(),
-      event,
+    // Verificar si el usuario está autenticado
+    if (!this.authService.isAuthenticated()) {
+      // Si no está logueado, redirigir al login
+      this.router.navigate(['/auth/login'], {
+        queryParams: { returnUrl: this.router.url },
+      });
+      return;
+    }
+
+    const usuario = this.authService.currentUser();
+    const producto = this.producto();
+
+    if (!usuario || !producto) {
+      console.error('Usuario o producto no disponible');
+      return;
+    }
+
+    // Evitar múltiples clicks
+    if (this.cargandoFavorito()) {
+      return;
+    }
+
+    this.cargandoFavorito.set(true);
+
+    // Llamar al servicio para toggle favorito
+    this.favoritoService.toggleFavorito(usuario.id, producto.id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.esFavorito.set(response.accion === 'agregado');
+
+          // Emitir evento para componentes padre
+          this.onFavoritoToggle.emit({
+            producto: this.producto(),
+            event,
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error al cambiar favorito:', error);
+        // Aquí podrías mostrar un toast de error
+      },
+      complete: () => {
+        this.cargandoFavorito.set(false);
+      },
     });
+  }
+
+  /**
+   * Verifica si el producto es favorito del usuario actual
+   */
+  private verificarFavorito(userId: number, productoId: number): void {
+    this.favoritoService
+      .verificarFavorito({ user_id: userId, producto_id: productoId })
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.esFavorito.set(response.es_favorito);
+          }
+        },
+        error: (error) => {
+          console.error('Error al verificar favorito:', error);
+          this.esFavorito.set(false);
+        },
+      });
   }
 
   /**
